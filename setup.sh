@@ -159,21 +159,89 @@ ensure_ollama_server() {
 
 ensure_hermes() {
     local hermes_binary="$HOME/.local/bin/hermes"
-    local hermes_installer
+    local hermes_log="$HOME/.local/hermes_install.log"
+    local hermes_gateway_service="$HOME/.config/systemd/user/hermes-gateway.service"
 
-    if [[ -x "$hermes_binary" ]]; then
-        log "Hermes ist bereits installiert"
+    if [[ -x "$hermes_binary" ]] && [[ -f "$hermes_gateway_service" ]]; then
+        log "Hermes ist bereits installiert und als Service konfiguriert"
+        # Stelle sicher, dass der Service läuft
+        systemctl --user is-active --quiet hermes-gateway || {
+            log "Starte Hermes-Gateway-Service..."
+            systemctl --user start hermes-gateway
+        }
         return 0
     fi
 
-    hermes_installer="$(mktemp)"
-    trap 'rm -f "$hermes_installer"' RETURN
+    if [[ ! -x "$hermes_binary" ]]; then
+        log "Installiere Hermes Agent im Hintergrund..."
+        log "Logs: $hermes_log"
+        
+        nohup bash -c 'curl -fsSL "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh" | bash -s -- --skip-setup' > "$hermes_log" 2>&1 &
+        
+        # Warte bis zu 10 Sekunden auf Binary
+        for i in {1..10}; do
+            sleep 1
+            if [[ -x "$hermes_binary" ]]; then
+                log "Hermes Binary verfügbar"
+                break
+            fi
+        done
+    fi
 
-    log "Installiere Hermes Agent"
-    retry 3 2 curl -fsSL "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh" -o "$hermes_installer"
-    bash "$hermes_installer"
-    rm -f "$hermes_installer"
-    trap - RETURN
+    # Konfiguriere Hermes Dashboard Service
+    if [[ -x "$hermes_binary" ]]; then
+        log "Installiere Hermes Dashboard Service..."
+        mkdir -p "$HOME/.config/systemd/user"
+        
+        # Hermes Dashboard Service erstellen (Web UI auf Port 9119)
+        cat > "$hermes_gateway_service" << 'HERMES_SERVICE'
+[Unit]
+Description=Hermes Agent Dashboard Web Server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hermes dashboard --no-open
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
+HERMES_SERVICE
+
+        # Service enablen und starten
+        systemctl --user daemon-reload
+        systemctl --user enable hermes-gateway
+        log "Hermes-Dashboard-Service konfiguriert"
+    fi
+
+    if [[ -x "$hermes_binary" ]]; then
+        # Starte Dashboard jetzt
+        log "Starte Hermes Dashboard Web-Server..."
+        systemctl --user start hermes-gateway || true
+        
+        # Warte kurz auf Startup
+        sleep 2
+        
+        # Prüfe ob es läuft
+        if systemctl --user is-active --quiet hermes-gateway; then
+            log "Hermes Dashboard läuft auf http://localhost:9119"
+        else
+            warn "Hermes Dashboard konnte nicht gestartet werden"
+            warn "Versuche manuell: systemctl --user start hermes-gateway"
+            warn "Oder direkt: ~/.local/bin/hermes dashboard --no-open"
+            warn "Status prüfen: systemctl --user status hermes-gateway"
+            warn "Logs: journalctl --user -u hermes-gateway -f"
+        fi
+    else
+        warn "Hermes-Installation läuft noch im Hintergrund"
+        warn "Status: tail -f $hermes_log"
+    fi
+
+    return 0
 }
 
 ensure_not_root
