@@ -15,6 +15,7 @@
       - git
       - wget
       - openssh-server
+      - snapd
     state: present
 
 - name: Ensure ssh service enabled and running
@@ -22,6 +23,18 @@
     name: ssh
     enabled: true
     state: started
+
+- name: Ensure snapd service enabled and running
+  ansible.builtin.systemd:
+    name: snapd
+    enabled: true
+    state: started
+
+- name: Install Visual Studio Code via Snap
+  community.general.snap:
+    name: code
+    classic: true
+    state: present
 
 - name: Clean apt cache
   ansible.builtin.apt:

@@ -57,6 +57,12 @@ Idempotenz pruefen (zweimal hintereinander):
 - ansible/group_vars/local/main.yml: Variablen mit Defaults, ueberschreibbar per .env
 - ansible/roles: Rollen fuer base, ssh, git, ollama
 
+## Enthaltene Kerninstallationen
+
+- Basispakete (curl, git, wget, openssh-server)
+- OpenSSH Dienst aktiviert
+- Visual Studio Code ueber Snap (code --classic, App-Store-kompatibler Updatepfad)
+
 ## Frisches System spaeter erneut aufsetzen
 
 Auf einer neuen Maschine reichen danach diese Schritte:
