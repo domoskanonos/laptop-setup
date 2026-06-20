@@ -1,0 +1,38 @@
+---
+- name: Check if ollama binary exists
+  ansible.builtin.command: which ollama
+  register: ollama_which
+  changed_when: false
+  failed_when: false
+
+- name: Install or update ollama
+  ansible.builtin.shell: curl -fsSL https://ollama.com/install.sh | sh
+  args:
+    executable: /bin/bash
+  when: ollama_which.rc != 0
+
+- name: Check if ollama service unit exists
+  ansible.builtin.command: systemctl list-unit-files ollama.service
+  register: ollama_service_check
+  changed_when: false
+  failed_when: false
+
+- name: Enable and start ollama service
+  ansible.builtin.systemd:
+    name: ollama
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: ollama_service_check.rc == 0
+
+- name: Check installed ollama models
+  ansible.builtin.command: ollama list
+  register: ollama_models
+  changed_when: false
+  failed_when: false
+
+- name: Pull default ollama model when missing
+  ansible.builtin.command: "ollama pull {{ ollama_default_model }}"
+  when:
+    - ollama_models.rc == 0
+    - ollama_default_model not in ollama_models.stdout
