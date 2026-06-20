@@ -59,4 +59,8 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Ignoriert ungueltige oder nicht erlaubte `.env`-Variablen
 - Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
 - Gibt bei Paketen, Snaps, Diensten, Git, Ollama und Hermes klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
-- Hermes-Installation mit 15-Minuten-Timeout
+- Hermes wird ueber den offiziellen Installer eingerichtet
+
+Nach der Installation kannst du das Web-Dashboard mit folgendem Befehl starten:
+
+    hermes dashboard
