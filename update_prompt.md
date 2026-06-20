@@ -28,12 +28,13 @@ Das Repository besteht aus:
    - Dienste nur starten/aktivieren, wenn noetig
    - Ollama-Modell nur laden, wenn es noch nicht vorhanden ist
    - Snap-Pakete nur installieren, wenn sie fehlen
+   - Fuer alle diese Faelle klare Skip-/Install-Logs ausgeben, damit sichtbar ist, was wirklich neu gemacht wurde
 
 4. Installationsumfang
    - Systemupdate via `apt-get update` und `apt-get upgrade -y`
    - Basispakete: `curl`, `git`, `wget`, `openssh-server`, `snapd`
    - OpenSSH-Dienst aktivieren
-   - Visual Studio Code via Snap (`code --classic`) installieren
+   - Visual Studio Code explizit ueber den Ubuntu App-Store-/Snap-Weg (`code --classic`) installieren
    - Ollama installieren und Standardmodell ziehen
 
 5. Robustheit
