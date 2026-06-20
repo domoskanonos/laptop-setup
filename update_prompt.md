@@ -1,46 +1,76 @@
-Du bist ein erfahrener Linux-Systemadministrator und Experte fuer Ansible und Bash. Deine Aufgabe ist es, dieses Repository fuer Ubuntu 26.04 so zu modernisieren, dass Ansible der primaere Setup-Weg ist und ein schlankes bootstrap.sh nur den Erststart uebernimmt.
+Du bist ein erfahrener Linux-Systemadministrator und Ansible-Experte. Analysiere und optimiere dieses Repository fuer Ubuntu 26.04 LTS. Ansible ist der primaere Weg; bootstrap.sh uebernimmt nur den Erststart auf frischen Systemen.
 
-WICHTIG:
-- Fokus auf Ansible-Playbook statt monolithischem Bash-Skript.
-- Alles idempotent umsetzen, so dass mehrfache Ausfuehrungen stabil bleiben.
-- Keine hardcodierten Benutzerdaten im Code.
-- Variablen aus .env uebernehmen oder ueber group_vars sauber konfigurierbar machen.
-- Eine .env.example als Vorlage bereitstellen.
+## Kontext und Struktur
 
-Pflichtanforderungen:
+Das Repository besteht aus:
+- bootstrap.sh: Installiert git/ansible/make, klont das Repo falls noetig, ruft make deps + make apply auf
+- Makefile: Targets deps / lint / check / apply / idempotence
+- ansible/site.yml: Ansible-Einstiegspunkt
+- ansible/ansible.cfg: Lokale Konfiguration
+- ansible/inventories/local/hosts.yml: localhost mit ansible_connection=local
+- ansible/group_vars/local/main.yml: Variablen (aus .env-Umgebungsvariablen mit Defaults)
+- ansible/requirements.yml: community.general Collection
+- ansible/roles/base, ssh, git, ollama: Rollen
+- .env.example / .env: Nutzerkonfiguration (nicht eingecheckt)
 
-1) Ansible Struktur
-- ansible/site.yml als Einstiegspunkt
-- lokales Inventory fuer localhost
-- Rollen fuer mindestens: base, ssh, git, ollama
-- group_vars fuer konfigurierbare Werte
-- ansible.cfg fuer lokale Ausfuehrung
+## Bekannte Fallstricke - diese MÜSSEN beruecksichtigt werden
 
-2) Idempotenz und Sicherheit
-- Ansible-Module bevorzugen statt shell/command, wo moeglich
-- Nur wenn noetig aendern (least-change)
-- Fehler klar melden
-- Keine veralteten Ubuntu Methoden (kein apt-key)
+1. sudo-Prompt auf Deutsch:
+   - Ubuntu auf Deutsch gibt `Passwort:` aus, Ansible erwartet `password:`
+   - Loesung: LANG=C vor jeden ansible-playbook-Aufruf setzen (bereits im Makefile)
+   - Niemals diesen Prefix entfernen
 
-3) Testbarkeit
-- Syntax-Check und Dry-Run Befehle bereitstellen
-- Wiederholte Ausfuehrung zur Idempotenz pruefbar machen
-- Makefile Targets anlegen: deps, lint, check, apply, idempotence
+2. become / sudo:
+   - Ansible muss sudo-Rechte per --ask-become-pass erhalten
+   - Kein sudo -v Trick verwenden (funktioniert nicht zuverlaessig mit Ansible become)
+   - LANG=C ansible-playbook --ask-become-pass ist die korrekte Form
 
-4) Dokumentation
-- README aktualisieren mit:
-  - Bootstrap auf neuem System
-  - Konfiguration ueber .env
-  - Testen (lint/check)
-  - Produktivlauf (apply)
-  - Wiederholte Runs (idempotence)
+3. Python-Interpreter-Warning:
+   - Ubuntu 26.04 liefert python3.14; interpreter_python = auto_silent in ansible.cfg unterdrueckt die Warnung
 
-5) Bootstrap Workflow
-- Kein legacy Setup-Skript mehr im Repository
-- bootstrap.sh bleibt bewusst klein und delegiert an make/ansible
-- In README klar dokumentieren, wie bootstrap.sh auf neuen Systemen genutzt wird
+4. .env-Sicherheit:
+   - .env nicht per source laden (Code-Injection-Risiko)
+   - Nur Whitelist-Variablen erlauben: GIT_USER_NAME, GIT_USER_EMAIL, SSH_KEY_PATH, OLLAMA_DEFAULT_MODEL
+   - group_vars liest Werte per lookup('env', ...) mit Default-Fallback
 
-Antwortformat:
-- Erst kurz zusammenfassen, was geaendert wurde.
-- Dann die neuen/angepassten Dateien mit Inhalt zeigen.
-- Zum Schluss die exakten Befehle fuer einen neuen Rechner nennen.
+## Pflichtanforderungen
+
+1) Ansible-Rollen
+   - base: apt update/upgrade, Basispakete, snapd, VS Code via Snap (community.general.snap, classic=true), SSH-Dienst
+   - ssh: SSH-Key-Berechtigungen pruefen und setzen, Agent nur wenn noetig
+   - git: git_config-Modul (community.general), nur aendern wenn abweichend
+   - ollama: Installation per offiziellem install.sh (shell-Task mit creates-Pruefung), systemd-Service, Modell-Pull nur wenn fehlt
+
+2) Idempotenz
+   - Ansible-Module bevorzugen (apt, systemd, file, community.general.snap, community.general.git_config)
+   - shell/command nur wenn kein Modul verfuegbar, immer mit creates oder changed_when/failed_when
+   - Kein apt-key, GPG-Keyrings unter /etc/apt/keyrings/ wenn noetig
+   - DEBIAN_FRONTEND=noninteractive bei allen apt-Aufrufen
+
+3) Konfiguration
+   - Keine hardcodierten Nutzerdaten in Playbooks oder Rollen
+   - Alle Nutzerwerte in group_vars mit env-Lookup und sicherem Default
+   - .env.example als vollstaendige Vorlage mit Kommentaren
+
+4) Makefile
+   - LANG=C vor jedem ansible-playbook beibehalten
+   - BECOME_FLAG?=--ask-become-pass (ueberschreibbar mit BECOME_FLAG=)
+   - Targets: deps, lint, check, apply, idempotence
+
+5) bootstrap.sh
+   - Schlank halten: nur Voraussetzungen + make deps + make apply
+   - Root-Check am Anfang
+   - Repo klonen wenn nicht vorhanden, git pull wenn vorhanden
+   - .env aus .env.example kopieren wenn .env fehlt
+
+6) README
+   - Quickstart fuer neues System in maximal 5 Befehlen
+   - Erklaerung aller make-Targets
+   - Hinweis auf .env-Konfiguration
+
+## Antwortformat
+
+- Kurze Zusammenfassung der Aenderungen
+- Geaenderte/neue Dateien vollstaendig zeigen
+- Exakte Befehle fuer einen neuen Rechner am Ende
+- Liste offener Annahmen falls Informationen fehlen
