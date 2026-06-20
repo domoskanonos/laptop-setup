@@ -157,6 +157,25 @@ ensure_ollama_server() {
     log "Ollama-Server ist erreichbar"
 }
 
+ensure_hermes() {
+    local hermes_binary="$HOME/.local/bin/hermes"
+    local hermes_installer
+
+    if [[ -x "$hermes_binary" ]]; then
+        log "Hermes ist bereits installiert"
+        return 0
+    fi
+
+    hermes_installer="$(mktemp)"
+    trap 'rm -f "$hermes_installer"' RETURN
+
+    log "Installiere Hermes Agent"
+    retry 3 2 curl -fsSL "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh" -o "$hermes_installer"
+    bash "$hermes_installer"
+    rm -f "$hermes_installer"
+    trap - RETURN
+}
+
 ensure_not_root
 
 log "Starte System-Update"
@@ -225,6 +244,8 @@ if command_exists ollama; then
 else
     warn "Ollama wurde nicht gefunden; ueberspringe Modell-Download"
 fi
+
+ensure_hermes
 
 log "Raeume APT Cache auf"
 sudo apt-get clean

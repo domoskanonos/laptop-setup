@@ -46,6 +46,7 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Visual Studio Code ueber den Ubuntu App-Store-/Snap-Weg (`code --classic`)
 - Git-Global-Config aus `.env`
 - Ollama inklusive Standardmodell
+- Hermes Agent in `$HOME/.local/bin/hermes`
 
 ## Verhalten des Skripts
 
@@ -54,6 +55,7 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Aendert Git nur bei abweichenden Werten
 - Prueft den SSH-Key und setzt Berechtigungen
 - Zieht das Ollama-Modell nur, wenn es noch fehlt
+- Installiert Hermes nur, wenn `$HOME/.local/bin/hermes` noch fehlt
 - Ignoriert ungueltige oder nicht erlaubte `.env`-Variablen
-- Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
-- Gibt bei Paketen, Snaps, Diensten, Git und Ollama klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
+- Verwendet Retry-Logik fuer Snap-, Ollama- und Hermes-Downloads
+- Gibt bei Paketen, Snaps, Diensten, Git, Ollama und Hermes klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
