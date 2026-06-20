@@ -34,9 +34,7 @@ Alternative ohne vorheriges Klonen:
 
 ## Playbook testen und ausfuehren
 
-Vor check/apply/idempotence einmal sudo Session oeffnen:
-
-    sudo -v
+Die Targets fragen standardmaessig nach dem sudo Passwort (Ansible become).
 
 Syntax check:
 
@@ -49,6 +47,10 @@ Dry run mit Diff:
 Echter Lauf:
 
     make apply
+
+Optional ohne Passwort-Prompt (nur wenn sudo Ticket bereits gueltig):
+
+    make apply BECOME_FLAG=
 
 Idempotenz pruefen (zweimal hintereinander):
 
