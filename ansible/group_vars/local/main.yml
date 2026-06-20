@@ -1,4 +1,0 @@
-git_user_name: "{{ lookup('env', 'GIT_USER_NAME') | default('Dominik Bruhn', true) }}"
-git_user_email: "{{ lookup('env', 'GIT_USER_EMAIL') | default('domoskanonos@googlemail.com', true) }}"
-ssh_key_path: "{{ lookup('env', 'SSH_KEY_PATH') | default(lookup('env', 'HOME') + '/.ssh/id_ed25519', true) }}"
-ollama_default_model: "{{ lookup('env', 'OLLAMA_DEFAULT_MODEL') | default('qwen3.5:4b', true) }}"
