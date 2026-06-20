@@ -34,7 +34,8 @@ Alternative ohne vorheriges Klonen:
 
 ## Playbook testen und ausfuehren
 
-Die Targets fragen standardmaessig nach dem sudo Passwort (Ansible become).
+Die Targets fragen einmalig nach dem sudo Passwort und uebergeben es intern an Ansible become.
+Das vermeidet die bekannten PTY-/Prompt-Probleme bei localhost + sudo.
 
 Syntax check:
 
@@ -47,10 +48,6 @@ Dry run mit Diff:
 Echter Lauf:
 
     make apply
-
-Optional ohne Passwort-Prompt (nur wenn sudo Ticket bereits gueltig):
-
-    make apply BECOME_FLAG=
 
 Idempotenz pruefen (zweimal hintereinander):
 
