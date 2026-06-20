@@ -1,17 +1,13 @@
 # Laptop Setup (Ubuntu 26.04)
 
-Dieses Repository bietet zwei Wege:
-
-- Ansible als bevorzugten, reproduzierbaren Weg
-- bootstrap.sh fuer den Erststart auf frischen Systemen
-
-Der empfohlene Standard ist Ansible, weil es idempotent ist und sich sehr gut testen und wiederholt ausfuehren laesst.
+Dieses Repository verwendet wieder ein normales Bash-Installationsskript: [setup.sh](/home/laptop/_dev/repositories/laptop-setup/setup.sh).
 
 ## Voraussetzungen
 
-- Ubuntu 26.04 (oder Debian/Ubuntu kompatibel)
-- Ein normaler Benutzer mit sudo Rechten
+- Ubuntu 26.04 oder ein kompatibles Debian/Ubuntu-System
+- Ein normaler Benutzer mit sudo-Rechten
 - Internetverbindung
+- Eine vorhandene SSH-Key-Datei unter dem in `.env` konfigurierten Pfad
 
 ## Konfiguration
 
@@ -19,59 +15,38 @@ Beispieldatei kopieren und anpassen:
 
     cp .env.example .env
 
-Inhalt anpassen (Git Name, Mail, SSH Key Pfad, Ollama Modell).
-Die Makefile-Targets laden .env automatisch vor dem Playbook-Lauf.
+In `.env` konfigurierst du:
 
-## Ansible Setup
+- `GIT_USER_NAME`
+- `GIT_USER_EMAIL`
+- `SSH_KEY_PATH`
+- `OLLAMA_DEFAULT_MODEL`
 
-Minimaler Bootstrap auf neuem System:
+## Ausfuehrung
 
-    ./bootstrap.sh
+Im Repository:
 
-Alternative ohne vorheriges Klonen:
+    chmod +x setup.sh
+    ./setup.sh
 
-    curl -fsSL https://raw.githubusercontent.com/domoskanonos/laptop-setup/main/bootstrap.sh | bash
+Oder auf einem frischen System direkt:
 
-## Playbook testen und ausfuehren
+    curl -fsSL https://raw.githubusercontent.com/domoskanonos/laptop-setup/main/setup.sh -o setup.sh
+    chmod +x setup.sh
+    ./setup.sh
 
-Die Targets fragen einmalig nach dem sudo Passwort und uebergeben es intern an Ansible become.
-Das vermeidet die bekannten PTY-/Prompt-Probleme bei localhost + sudo.
+## Was installiert wird
 
-Syntax check:
+- Basispakete: `curl`, `git`, `wget`, `openssh-server`, `snapd`
+- OpenSSH-Dienst
+- Visual Studio Code ueber Snap (`code --classic`)
+- Git-Global-Config aus `.env`
+- Ollama inklusive Standardmodell
 
-    make lint
+## Verhalten des Skripts
 
-Dry run mit Diff:
-
-    make check
-
-Echter Lauf:
-
-    make apply
-
-Idempotenz pruefen (zweimal hintereinander):
-
-    make idempotence
-
-## Wichtige Ordner
-
-- ansible/site.yml: Einstiegspunkt
-- ansible/inventories/local/hosts.yml: Lokales Inventory
-- ansible/group_vars/local/main.yml: Variablen mit Defaults, ueberschreibbar per .env
-- ansible/roles: Rollen fuer base, ssh, git, ollama
-
-## Enthaltene Kerninstallationen
-
-- Basispakete (curl, git, wget, openssh-server)
-- OpenSSH Dienst aktiviert
-- Visual Studio Code ueber Snap (code --classic, App-Store-kompatibler Updatepfad)
-
-## Frisches System spaeter erneut aufsetzen
-
-Auf einer neuen Maschine reichen danach diese Schritte:
-
-    curl -fsSL https://raw.githubusercontent.com/domoskanonos/laptop-setup/main/bootstrap.sh | bash
-
-## Bootstrap Script
-
-bootstrap.sh installiert auf einem frischen Ubuntu-System die noetigen Tools (git, ansible, make), klont bei Bedarf das Repository nach ~/laptop-setup und fuehrt danach make deps sowie make apply aus.
+- Kann mehrfach ausgefuehrt werden
+- Installiert fehlende Pakete nach
+- Aendert Git nur bei abweichenden Werten
+- Prueft den SSH-Key und setzt Berechtigungen
+- Zieht das Ollama-Modell nur, wenn es noch fehlt
