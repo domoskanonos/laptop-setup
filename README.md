@@ -55,7 +55,8 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Aendert Git nur bei abweichenden Werten
 - Prueft den SSH-Key und setzt Berechtigungen
 - Zieht das Ollama-Modell nur, wenn es noch fehlt
-- Installiert Hermes nur, wenn `$HOME/.local/bin/hermes` noch fehlt
+
 - Ignoriert ungueltige oder nicht erlaubte `.env`-Variablen
-- Verwendet Retry-Logik fuer Snap-, Ollama- und Hermes-Downloads
+- Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
 - Gibt bei Paketen, Snaps, Diensten, Git, Ollama und Hermes klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
+- Hermes-Installation mit 15-Minuten-Timeout

@@ -29,6 +29,7 @@ Das Repository besteht aus:
    - Ollama-Modell nur laden, wenn es noch nicht vorhanden ist
    - Snap-Pakete nur installieren, wenn sie fehlen
    - Hermes nur installieren, wenn `$HOME/.local/bin/hermes` noch fehlt
+
    - Fuer alle diese Faelle klare Skip-/Install-Logs ausgeben, damit sichtbar ist, was wirklich neu gemacht wurde
 
 4. Installationsumfang
@@ -37,7 +38,7 @@ Das Repository besteht aus:
    - OpenSSH-Dienst aktivieren
    - Visual Studio Code explizit ueber den Ubuntu App-Store-/Snap-Weg (`code --classic`) installieren
    - Ollama installieren und Standardmodell ziehen
-   - Hermes Agent installieren (`$HOME/.local/bin/hermes`)
+   - Hermes Agent installieren via offiziellen Installer mit `--skip-setup` Flag
 
 5. Robustheit
    - `set -euo pipefail` verwenden
