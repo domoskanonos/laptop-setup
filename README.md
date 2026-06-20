@@ -34,6 +34,10 @@ Alternative ohne vorheriges Klonen:
 
 ## Playbook testen und ausfuehren
 
+Vor check/apply/idempotence einmal sudo Session oeffnen:
+
+    sudo -v
+
 Syntax check:
 
     make lint

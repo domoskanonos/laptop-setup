@@ -12,11 +12,14 @@ lint:
 	bash -lc '$(ENV_RUN) ansible-playbook --syntax-check -i $(INVENTORY) $(PLAYBOOK)'
 
 check:
-	bash -lc '$(ENV_RUN) ansible-playbook --check --diff -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass'
+	sudo -v
+	bash -lc '$(ENV_RUN) ansible-playbook --check --diff -i $(INVENTORY) $(PLAYBOOK)'
 
 apply:
-	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass'
+	sudo -v
+	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK)'
 
 idempotence:
-	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass'
-	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK) --ask-become-pass'
+	sudo -v
+	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK)'
+	bash -lc '$(ENV_RUN) ansible-playbook -i $(INVENTORY) $(PLAYBOOK)'
