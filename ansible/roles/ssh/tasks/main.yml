@@ -1,0 +1,38 @@
+---
+- name: Ensure ~/.ssh exists
+  become: false
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.ssh"
+    state: directory
+    mode: "0700"
+
+- name: Check SSH private key presence
+  become: false
+  ansible.builtin.stat:
+    path: "{{ ssh_key_path }}"
+  register: ssh_private_key
+
+- name: Fail when SSH private key is missing
+  ansible.builtin.fail:
+    msg: "SSH private key not found at {{ ssh_key_path }}"
+  when: not ssh_private_key.stat.exists
+
+- name: Set private key permissions
+  become: false
+  ansible.builtin.file:
+    path: "{{ ssh_key_path }}"
+    mode: "0600"
+  when: ssh_private_key.stat.exists
+
+- name: Check SSH public key presence
+  become: false
+  ansible.builtin.stat:
+    path: "{{ ssh_key_path }}.pub"
+  register: ssh_public_key
+
+- name: Set public key permissions
+  become: false
+  ansible.builtin.file:
+    path: "{{ ssh_key_path }}.pub"
+    mode: "0644"
+  when: ssh_public_key.stat.exists
