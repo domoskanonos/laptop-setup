@@ -3,6 +3,76 @@
 # Fehler abfangen: Skript bricht bei unerwarteten Fehlern sofort ab
 set -euo pipefail
 
+# =============================================================================
+# KONFIGURATION LADEN
+# =============================================================================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Defaults (wenn .env nicht existiert)
+GIT_USER_NAME="${GIT_USER_NAME:-Dominik Bruhn}"
+GIT_USER_EMAIL="${GIT_USER_EMAIL:-domoskanonos@googlemail.com}"
+SSH_KEY_PATH="${SSH_KEY_PATH:-$HOME/.ssh/id_ed25519}"
+OLLAMA_DEFAULT_MODEL="${OLLAMA_DEFAULT_MODEL:-qwen3.5:4b}"
+
+# .env sicher laden: nur Whitelist-Variablen, keine Code-Ausfuehrung
+load_env_file() {
+    local env_file="$1"
+    local line key value
+    local allowed='^(GIT_USER_NAME|GIT_USER_EMAIL|SSH_KEY_PATH|OLLAMA_DEFAULT_MODEL)$'
+
+    while IFS= read -r line || [ -n "$line" ]; do
+        line="${line%$'\r'}"
+
+        # Leere Zeilen und Kommentare ignorieren
+        if [[ -z "${line//[[:space:]]/}" ]] || [[ "$line" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+
+        if [[ "$line" != *"="* ]]; then
+            echo "⚠️  Ungueltige .env-Zeile ignoriert: $line" >&2
+            continue
+        fi
+
+        key="${line%%=*}"
+        value="${line#*=}"
+
+        # Fuehrende/trailing Spaces entfernen
+        key="${key#"${key%%[![:space:]]*}"}"
+        key="${key%"${key##*[![:space:]]}"}"
+        value="${value#"${value%%[![:space:]]*}"}"
+        value="${value%"${value##*[![:space:]]}"}"
+
+        if [[ ! "$key" =~ $allowed ]]; then
+            echo "⚠️  Nicht erlaubte .env-Variable ignoriert: $key" >&2
+            continue
+        fi
+
+        # Optionale Anfuehrungszeichen entfernen
+        if [[ "$value" =~ ^\".*\"$ ]] || [[ "$value" =~ ^\'.*\'$ ]]; then
+            value="${value:1:-1}"
+        fi
+
+        # Hauefiger Fall in .env.example
+        value="${value//\$HOME/$HOME}"
+
+        printf -v "$key" '%s' "$value"
+    done < "$env_file"
+}
+
+# Umgebungsvariablen aus .env laden (wenn vorhanden)
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    echo "Lade Konfiguration aus .env..."
+    load_env_file "$SCRIPT_DIR/.env"
+else
+    echo "ℹ️  Keine .env gefunden, nutze Defaults."
+    echo "💡 Tipp: Kopiere .env.example zu .env und passe Werte an."
+fi
+
+echo "Git User: $GIT_USER_NAME <$GIT_USER_EMAIL>"
+echo "SSH Key: $SSH_KEY_PATH"
+echo "Ollama Model: $OLLAMA_DEFAULT_MODEL"
+echo ""
+
 # 1. Schutz vor falscher Ausführung als Root
 if [ "$EUID" -eq 0 ]; then
     echo "❌ ERROR: Bitte starte dieses Skript NICHT mit 'sudo ./setup.sh'!" >&2
@@ -13,7 +83,7 @@ fi
 
 # 2. Harter Check für den SSH-Schlüssel (Abbruch bei Fehlen)
 echo "=== Überprüfe SSH Schlüssel ==="
-if [ ! -f ~/.ssh/id_ed25519 ]; then
+if [ ! -f "$SSH_KEY_PATH" ]; then
     echo "❌ CRITICAL ERROR: Der private SSH-Schlüssel (~/.ssh/id_ed25519) fehlt!" >&2
     echo "Das Setup wird abgebrochen. Bitte lege den Schlüssel zuerst an." >&2
     exit 1
@@ -22,8 +92,10 @@ fi
 # Wenn der Key da ist, Berechtigungen sauber setzen
 mkdir -p ~/.ssh
 chmod 700 ~/.ssh
-chmod 600 ~/.ssh/id_ed25519
-chmod 644 ~/.ssh/id_ed25519.pub
+chmod 600 "$SSH_KEY_PATH"
+if [ -f "${SSH_KEY_PATH}.pub" ]; then
+    chmod 644 "${SSH_KEY_PATH}.pub"
+fi
 
 # SSH-Agent starten (nur wenn nicht schon aktiv) und Key hinzufügen
 if [ -z "${SSH_AUTH_SOCK:-}" ]; then
@@ -31,8 +103,8 @@ if [ -z "${SSH_AUTH_SOCK:-}" ]; then
 fi
 
 # Key nur hinzufügen wenn noch nicht geladen (idempotent)
-if ! ssh-add -l >/dev/null 2>&1 || ! ssh-add -l 2>/dev/null | grep -q id_ed25519; then
-    ssh-add ~/.ssh/id_ed25519
+if ! ssh-add -l >/dev/null 2>&1 || ! ssh-add -l 2>/dev/null | grep -q "$(basename "$SSH_KEY_PATH")"; then
+    ssh-add "$SSH_KEY_PATH"
     echo "✅ SSH-Schlüssel geladen."
 else
     echo "✅ SSH-Schlüssel ist bereits geladen."
@@ -88,11 +160,11 @@ echo -e "\n=== Konfiguriere Git ==="
 CURRENT_NAME=$(git config --global user.name || echo "")
 CURRENT_EMAIL=$(git config --global user.email || echo "")
 
-if [ "$CURRENT_NAME" = "Dominik Bruhn" ] && [ "$CURRENT_EMAIL" = "domoskanonos@googlemail.com" ]; then
+if [ "$CURRENT_NAME" = "$GIT_USER_NAME" ] && [ "$CURRENT_EMAIL" = "$GIT_USER_EMAIL" ]; then
     echo "✅ Git ist bereits korrekt konfiguriert."
 else
-    git config --global user.name "Dominik Bruhn"
-    git config --global user.email "domoskanonos@googlemail.com"
+    git config --global user.name "$GIT_USER_NAME"
+    git config --global user.email "$GIT_USER_EMAIL"
     echo "✅ Git erfolgreich aktualisiert."
 fi
 
@@ -116,7 +188,7 @@ echo "Warte 5 Sekunden, bis der Server antwortet..."
 sleep 5
 
 echo -e "\n=== Überprüfe Ollama Standard-Modell ==="
-MODEL_NAME="qwen3.5:4b"
+MODEL_NAME="$OLLAMA_DEFAULT_MODEL"
 
 # Modell-Abfrage mit Fehlerbehandlung
 if ollama list 2>/dev/null | grep -q "$MODEL_NAME"; then
