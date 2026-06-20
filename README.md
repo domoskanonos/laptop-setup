@@ -22,6 +22,8 @@ In `.env` konfigurierst du:
 - `SSH_KEY_PATH`
 - `OLLAMA_DEFAULT_MODEL`
 
+Das Skript liest nur diese Variablen aus `.env`. Unbekannte Eintraege werden ignoriert.
+
 ## Ausfuehrung
 
 Im Repository:
@@ -34,6 +36,8 @@ Oder auf einem frischen System direkt:
     curl -fsSL https://raw.githubusercontent.com/domoskanonos/laptop-setup/main/setup.sh -o setup.sh
     chmod +x setup.sh
     ./setup.sh
+
+Ohne `.env` nutzt das Skript die eingebauten Defaults.
 
 ## Was installiert wird
 
@@ -50,3 +54,5 @@ Oder auf einem frischen System direkt:
 - Aendert Git nur bei abweichenden Werten
 - Prueft den SSH-Key und setzt Berechtigungen
 - Zieht das Ollama-Modell nur, wenn es noch fehlt
+- Ignoriert ungueltige oder nicht erlaubte `.env`-Variablen
+- Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
