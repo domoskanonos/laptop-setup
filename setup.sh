@@ -101,19 +101,16 @@ fi
 
 # === OLLAMA INSTALLATION & MODEL DOWNLOAD ===
 echo -e "\n=== Überprüfe Ollama ==="
-if command -v ollama &> /dev/null; then
-    echo "✅ Ollama ist bereits installiert."
-else
-    echo "Ollama wird installiert..."
-    curl -fsSL https://ollama.com/install.sh | sh
-    echo "✅ Ollama erfolgreich installiert."
-fi
+# Das offizielle install.sh ist idempotent – immer laufen lassen damit auch systemd-Service korrekt registriert wird
+echo "Ollama wird installiert/aktualisiert..."
+curl -fsSL https://ollama.com/install.sh | sh
+echo "✅ Ollama installiert."
 
-# Hintergrunddienst aktivieren und starten
+# Hintergrunddienst aktivieren und starten (mit Fehlertoleranz)
 echo "Starte und aktiviere Ollama-Hintergrunddienst..."
-sudo systemctl daemon-reload
-sudo systemctl enable ollama
-sudo systemctl start ollama
+sudo systemctl daemon-reload 2>/dev/null || true
+sudo systemctl enable ollama 2>/dev/null || true
+sudo systemctl start ollama 2>/dev/null || true
 
 echo "Warte 5 Sekunden, bis der Server antwortet..."
 sleep 5
