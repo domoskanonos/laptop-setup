@@ -16,6 +16,8 @@ Das Repository besteht aus:
 
 2. Konfiguration
    - Werte wie Git-Name, Git-Mail, SSH-Key-Pfad und Ollama-Modell aus `.env` laden
+   - `.env` sicher parsen, nicht blind per `source` laden
+   - Nur erlaubte Variablen uebernehmen: `GIT_USER_NAME`, `GIT_USER_EMAIL`, `SSH_KEY_PATH`, `OLLAMA_DEFAULT_MODEL`
    - Sinnvolle Defaults im Skript behalten
    - `.env.example` als gepflegte Vorlage aktuell halten
 
@@ -25,6 +27,7 @@ Das Repository besteht aus:
    - Git nur aendern, wenn Werte abweichen
    - Dienste nur starten/aktivieren, wenn noetig
    - Ollama-Modell nur laden, wenn es noch nicht vorhanden ist
+   - Snap-Pakete nur installieren, wenn sie fehlen
 
 4. Installationsumfang
    - Systemupdate via `apt-get update` und `apt-get upgrade -y`
@@ -37,12 +40,20 @@ Das Repository besteht aus:
    - `set -euo pipefail` verwenden
    - Als normaler User starten, nicht als root
    - Klare Log-Ausgaben fuer den Nutzer
+   - Retry-Logik fuer netzwerkabhaengige Schritte verwenden, wenn sinnvoll
    - APT-Cache am Ende bereinigen
 
-6. README
+6. Inhaltliche Leitplanken
+   - Visual Studio Code ueber Snap (`code --classic`) installieren
+   - OpenSSH und snapd aktivieren
+   - Ollama nur dann als Service aktivieren, wenn `ollama.service` vorhanden ist
+   - Keine toten Nebenpfade wie Ansible, Makefile oder bootstrap-Workflow wieder einfuehren
+
+7. README
    - Kurz und praktisch halten
    - Nutzung von `setup.sh` dokumentieren
    - `.env`-Konfiguration erklaeren
+   - Erwaehnen, dass unbekannte `.env`-Variablen ignoriert werden und Defaults vorhanden sind
 
 ## Antwortformat
 
