@@ -43,16 +43,17 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 
 - Basispakete: `curl`, `git`, `wget`, `openssh-server`, `snapd`
 - OpenSSH-Dienst
-- Visual Studio Code ueber Snap (`code --classic`)
+- Visual Studio Code ueber den Ubuntu App-Store-/Snap-Weg (`code --classic`)
 - Git-Global-Config aus `.env`
 - Ollama inklusive Standardmodell
 
 ## Verhalten des Skripts
 
 - Kann mehrfach ausgefuehrt werden
-- Installiert fehlende Pakete nach
+- Installiert und laedt Dinge nur nach, wenn sie noch fehlen
 - Aendert Git nur bei abweichenden Werten
 - Prueft den SSH-Key und setzt Berechtigungen
 - Zieht das Ollama-Modell nur, wenn es noch fehlt
 - Ignoriert ungueltige oder nicht erlaubte `.env`-Variablen
 - Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
+- Gibt bei Paketen, Snaps, Diensten, Git und Ollama klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
