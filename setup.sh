@@ -355,6 +355,14 @@ if ! command_exists ollama; then
 else
     log "Ollama ist bereits installiert"
 fi
+echo -e "\n=== Konfiguriere Ollama Umgebungsvariable ==="
+if grep -q "OLLAMA_HOST" ~/.bashrc; then
+    echo "OLLAMA_HOST ist bereits in ~/.bashrc eingetragen."
+else
+    echo 'export OLLAMA_HOST="http://127.0.0.1:11434"' >> ~/.bashrc
+    echo "✅ OLLAMA_HOST wurde zu ~/.bashrc hinzugefügt."
+fi
+export OLLAMA_HOST="http://127.0.0.1:11434"
 
 if command_exists ollama; then
     if ensure_ollama_server; then
