@@ -21,6 +21,11 @@ In `.env` konfigurierst du:
 - `GIT_USER_EMAIL`
 - `SSH_KEY_PATH`
 - `OLLAMA_DEFAULT_MODEL`
+- `HERMES_DASHBOARD_HOST`
+- `HERMES_DASHBOARD_PORT`
+- `HERMES_DASHBOARD_BASIC_AUTH_USERNAME`
+- `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD`
+- `HERMES_DASHBOARD_BASIC_AUTH_SECRET`
 
 Das Skript liest nur diese Variablen aus `.env`. Unbekannte Eintraege werden ignoriert.
 
@@ -47,6 +52,7 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Git-Global-Config aus `.env`
 - Ollama inklusive Standardmodell
 - Hermes Agent in `$HOME/.local/bin/hermes`
+- Hermes Dashboard als Daemon (`systemd --user`) mit GUI-Zugriff
 
 ## Verhalten des Skripts
 
@@ -60,7 +66,27 @@ Ohne `.env` nutzt das Skript die eingebauten Defaults.
 - Verwendet Retry-Logik fuer Snap- und Ollama-Downloads
 - Gibt bei Paketen, Snaps, Diensten, Git, Ollama und Hermes klar aus, ob etwas bereits vorhanden ist oder neu eingerichtet wird
 - Hermes wird ueber den offiziellen Installer eingerichtet
+- Hermes Dashboard wird als User-Dienst `hermes-dashboard.service` aktiviert
+- Fuer LAN-Zugriff wird standardmaessig auf `0.0.0.0:9119` gebunden
+- Login-Daten fuer die Dashboard-GUI liegen in `~/.hermes/.env` (`HERMES_DASHBOARD_BASIC_AUTH_*`)
+
+## Hermes GUI auf anderen Geraeten im Netzwerk
+
+Nach dem Setup laeuft Hermes als Daemon und ist im Netzwerk erreichbar. Beispiel:
+
+    http://<IP-DEINES-RECHNERS>:9119
+
+Die Zugangsdaten stehen in:
+
+    ~/.hermes/.env
+
+Dienst-Management:
+
+    systemctl --user status hermes-dashboard.service
+    systemctl --user restart hermes-dashboard.service
+    systemctl --user stop hermes-dashboard.service
 
 Nach der Installation kannst du das Web-Dashboard mit folgendem Befehl starten:
 
-    hermes dashboard
+    # nicht noetig, da nun als Daemon eingerichtet
+    systemctl --user restart hermes-dashboard.service
