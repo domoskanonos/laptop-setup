@@ -19,6 +19,9 @@ setup_basic
 source "$SCRIPT_DIR/lib/setup-git.sh"
 setup_git
 
+source "$SCRIPT_DIR/lib/setup-vscode.sh"
+setup_vscode
+
 source "$SCRIPT_DIR/lib/setup-uv.sh"
 setup_uv
 
