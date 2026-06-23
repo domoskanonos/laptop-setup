@@ -1,5 +1,5 @@
 if ! declare -f log >/dev/null 2>&1; then
-    source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+    source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/common.sh"
 fi
 
 HERMES_DASHBOARD_HOST="${HERMES_DASHBOARD_HOST:-0.0.0.0}"
@@ -35,7 +35,13 @@ ensure_hermes_runtime_env() {
     local existing_password
     local existing_secret
 
+    local config_src
+    config_src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config.yaml"
     mkdir -p "$HOME/.hermes"
+    if [[ -f "$config_src" ]]; then
+        cp "$config_src" "$HOME/.hermes/config.yaml"
+        log "Hermes-Konfiguration nach ~/.hermes/config.yaml kopiert"
+    fi
     touch "$env_file"
     chmod 600 "$env_file"
 

@@ -26,7 +26,7 @@ cp .env.example .env
 | `setup-ssh.sh` | `setup_ssh` | Prüft SSH-Key und setzt Berechtigungen (Standalone einsetzbar) |
 | `setup-uv.sh` | `setup_uv` | Installiert uv (Python-Paketmanager) |
 | `setup-ollama.sh` | `setup_ollama` | Installiert Ollama per Snap und lädt ein Modell vor |
-| `setup-hermes.sh` | `setup_hermes` | Installiert Hermes Agent und richtet Dashboard-Daemon ein (Standalone einsetzbar) |
+| `lib/hermes/setup-hermes.sh` | `setup_hermes` | Installiert Hermes Agent und richtet Dashboard-Daemon ein (Standalone einsetzbar) |
 | `setup-bambu.sh` | `setup_bambu` | Lädt BambuStudio AppImage, erstellt Desktop-Starter |
 | `setup-whatsapp.sh` | `setup_whatsapp` | Installiert whatsdev per Snap |
 | `setup-opencode.sh` | `setup_opencode` | Installiert OpenCode CLI und kopiert Konfiguration |
@@ -72,7 +72,9 @@ source lib/setup-bambu.sh && setup_bambu
 │   ├── setup-ssh.sh          # SSH-Key-Prüfung
 │   ├── setup-uv.sh           # uv-Installation
 │   ├── setup-ollama.sh       # Ollama-Installation
-│   ├── setup-hermes.sh       # Hermes Agent & Dashboard
+│   ├── hermes/
+│   │   ├── setup-hermes.sh   # Hermes Agent & Dashboard
+│   │   └── config.yaml       # Hermes-Konfiguration
 │   ├── setup-bambu.sh        # BambuStudio-Installation
 │   ├── setup-whatsapp.sh     # WhatsApp-Desktop (whatsdev)
 │   └── opencode/
