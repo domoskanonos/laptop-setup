@@ -14,6 +14,7 @@ setup_basic() {
     ensure_package openssh-server
     ensure_package snapd
     ensure_package util-linux-extra
+    ensure_package pandoc
 
     log "Aktiviere Dienste"
     ensure_service_running ssh
