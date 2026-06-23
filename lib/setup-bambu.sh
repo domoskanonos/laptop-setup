@@ -11,7 +11,9 @@ setup_bambu() {
     if [[ -f "$appimage_path" ]]; then
         log "BambuStudio AppImage bereits vorhanden: $appimage_path"
     else
-        sudo apt-get update && sudo apt-get install -y locales language-pack-en
+        "${APT_ENV[@]}" apt-get update
+        ensure_package locales
+        ensure_package language-pack-en
 
         mkdir -p "$HOME/.local/bin"
         mkdir -p "$HOME/.local/share/applications"

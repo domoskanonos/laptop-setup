@@ -13,7 +13,7 @@ Führe eine umfassende Bestandsaufnahme durch:
 - Erkenne Duplikate, Redundanzen oder widersprüchliche Logik
 
 **Aktualität**
-- Ãberprüfe externe Quellen (APIs, Paketmanager, Downloads) auf neuere Versionen oder geänderte Endpunkte
+- Überprüfe externe Quellen (APIs, Paketmanager, Downloads) auf neuere Versionen oder geänderte Endpunkte
 - Stelle sicher, dass Default-Werte, Konstanten und Konfigurationen dem aktuellen Stand entsprechen
 - Markiere veraltete Abhängigkeiten oder veraltete Ansätze zur Modernisierung
 
@@ -22,4 +22,4 @@ Führe eine umfassende Bestandsaufnahme durch:
 - Dokumentation muss vollständig, korrekt und synchron zum Quellcode sein
 - Fehlende oder überholte Dokumentation identifizieren und korrigieren oder entfernen
 
-Erstelle für alle Ãnderungen einen einzigen Commit mit aussagekräftiger Nachricht.
+Erstelle für alle Änderungen einen einzigen Commit mit aussagekräftiger Nachricht.
