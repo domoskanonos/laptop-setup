@@ -19,7 +19,6 @@ setup_basic() {
     ensure_package ffmpeg
     ensure_package imagemagick
     ensure_package sox
-    ensure_package sonic-visualiser
     ensure_package wkhtmltopdf
 
     log "Aktiviere Dienste"
