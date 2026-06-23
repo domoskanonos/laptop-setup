@@ -15,6 +15,11 @@ setup_basic() {
     ensure_package snapd
     ensure_package util-linux-extra
     ensure_package pandoc
+    ensure_package nodejs
+    ensure_package ffmpeg
+    ensure_package imagemagick
+    ensure_package sox
+    ensure_package sonic-visualiser
 
     log "Aktiviere Dienste"
     ensure_service_running ssh
