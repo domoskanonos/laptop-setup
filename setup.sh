@@ -34,10 +34,15 @@ setup_bambu
 source "$SCRIPT_DIR/lib/setup-whatsapp.sh"
 setup_whatsapp
 
-source "$SCRIPT_DIR/lib/setup-docker.sh"
-setup_docker
-
 source "$SCRIPT_DIR/lib/opencode/setup-opencode.sh"
 setup_opencode
 
+source "$SCRIPT_DIR/lib/setup-docker.sh"
+setup_docker
+
 log "Setup abgeschlossen"
+
+if command_exists docker && getent group docker | grep -q "$USER"; then
+    log "Starte Shell mit Docker-Zugriff — nach Beenden (exit/Ctrl+D) kehren Sie zuruck"
+    sg docker -c bash
+fi

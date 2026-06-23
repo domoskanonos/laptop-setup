@@ -1,0 +1,25 @@
+services:
+  comfyui:
+    image: ghcr.io/comfyanonymous/comfyui:latest
+    container_name: comfyui
+    ports:
+      - "8188:8188"
+    volumes:
+      - comfyui-models:/comfyui/models
+      - comfyui-input:/comfyui/input
+      - comfyui-output:/comfyui/output
+      - comfyui-custom-nodes:/comfyui/custom_nodes
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  comfyui-models:
+  comfyui-input:
+  comfyui-output:
+  comfyui-custom-nodes:
