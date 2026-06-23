@@ -15,11 +15,13 @@ setup_basic() {
     ensure_package snapd
     ensure_package util-linux-extra
     ensure_package pandoc
+    ensure_package calibre
     ensure_package nodejs
     ensure_package ffmpeg
     ensure_package imagemagick
     ensure_package sox
-    ensure_package wkhtmltopdf
+    ensure_package texlive-latex-recommended
+    ensure_package texlive-fonts-recommended
 
     log "Aktiviere Dienste"
     ensure_service_running ssh
