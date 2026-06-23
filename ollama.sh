@@ -5,6 +5,8 @@ set -euo pipefail
 
 echo "=== Starte Ollama Snap-Installation & Konfiguration ==="
 
+OLLAMA_DEFAULT_MODEL="${OLLAMA_DEFAULT_MODEL:-qwen3.5:4b}"
+
 # 1. Sicherstellen, dass snapd geladen und aktiv ist
 if ! command -v snap &> /dev/null; then
     echo "Snap ist nicht installiert. Installiere snapd..."
