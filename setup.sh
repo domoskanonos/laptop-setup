@@ -37,6 +37,9 @@ setup_whatsapp
 source "$SCRIPT_DIR/lib/opencode/setup-opencode.sh"
 setup_opencode
 
+source "$SCRIPT_DIR/lib/setup-nvidia.sh"
+setup_nvidia
+
 source "$SCRIPT_DIR/lib/setup-docker.sh"
 setup_docker
 

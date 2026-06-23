@@ -2,9 +2,9 @@ if ! declare -f log >/dev/null 2>&1; then
     source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../common.sh"
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
 setup_opencode() {
+    local opencode_dir
+
     log "Starte offizielle OpenCode CLI-Installation"
 
     if ! command_exists curl; then
@@ -17,7 +17,8 @@ setup_opencode() {
 
     log "Installiere opencode.jsonc nach ~/.config/opencode/"
     mkdir -p "$HOME/.config/opencode"
-    cp "$SCRIPT_DIR/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
+    opencode_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    cp "$opencode_dir/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
 
     log "OpenCode erfolgreich installiert und konfiguriert!"
 }
