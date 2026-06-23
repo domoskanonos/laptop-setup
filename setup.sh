@@ -34,6 +34,9 @@ setup_bambu
 source "$SCRIPT_DIR/lib/setup-whatsapp.sh"
 setup_whatsapp
 
+source "$SCRIPT_DIR/lib/setup-docker.sh"
+setup_docker
+
 source "$SCRIPT_DIR/lib/opencode/setup-opencode.sh"
 setup_opencode
 
