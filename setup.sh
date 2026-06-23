@@ -22,5 +22,16 @@ setup_git
 source "$SCRIPT_DIR/lib/setup-uv.sh"
 setup_uv
 
+source "$SCRIPT_DIR/lib/setup-ollama.sh"
+setup_ollama
+
+source "$SCRIPT_DIR/lib/setup-bambu.sh"
+setup_bambu
+
+source "$SCRIPT_DIR/lib/setup-whatsapp.sh"
+setup_whatsapp
+
+source "$SCRIPT_DIR/lib/opencode/setup-opencode.sh"
+setup_opencode
 
 log "Setup abgeschlossen"
