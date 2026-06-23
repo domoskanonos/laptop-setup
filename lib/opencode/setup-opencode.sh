@@ -20,5 +20,9 @@ setup_opencode() {
     opencode_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     cp "$opencode_dir/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
 
+    log "Kopiere opencode_cron.sh nach ~/.local/bin/"
+    mkdir -p "$HOME/.local/bin"
+    cp "$opencode_dir/opencode_cron.sh" "$HOME/.local/bin/opencode_cron.sh"
+
     log "OpenCode erfolgreich installiert und konfiguriert!"
 }
