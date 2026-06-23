@@ -9,6 +9,7 @@ setup_basic() {
 
     log "Installiere Basispakete"
     ensure_package curl
+    ensure_package git
     ensure_package wget
     ensure_package openssh-server
     ensure_package snapd
@@ -17,8 +18,8 @@ setup_basic() {
     ensure_service_running ssh
     ensure_service_running snapd
     sudo systemctl start snapd.socket >/dev/null 2>&1 || true
-}
 
-# system settings 
-gsettings set org.gnome.shell.extensions.ding show-trash false
-gsettings set org.gnome.shell.extensions.ding show-home false
+    log "Konfiguriere GNOME Desktop"
+    gsettings set org.gnome.shell.extensions.ding show-trash false 2>/dev/null || true
+    gsettings set org.gnome.shell.extensions.ding show-home false 2>/dev/null || true
+}

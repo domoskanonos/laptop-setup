@@ -18,7 +18,6 @@ retry() {
 }
 
 ensure_package()          { "${APT_ENV[@]}" apt-get install -y "$1"; }
-ensure_snap()             { sudo snap install "$@"; }
 ensure_service_running()  { sudo systemctl enable --now "$1" >/dev/null 2>&1 || true; }
 
 set_env_kv() {
