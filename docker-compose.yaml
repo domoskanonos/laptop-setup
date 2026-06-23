@@ -22,6 +22,31 @@ services:
       - comfyui_input:/root/ComfyUI/input
       - comfyui_output:/root/ComfyUI/output
       - comfyui_workflows:/root/ComfyUI/user/default/workflows
+    networks:
+      - local
+
+  tts:
+    image: domoskanonos/quisy-tts:0.37.0
+    #image: quisy-tts:latest
+    container_name: tts
+    restart: unless-stopped
+    ports:
+      - "8045:8045"
+    volumes:
+      - tts_data:/app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - DEVICE=cuda
+      - MODEL_SIZE=0.6
+    networks:
+      - local
 
 volumes:
   comfyui_root:
@@ -31,3 +56,7 @@ volumes:
   comfyui_input:
   comfyui_output:
   comfyui_workflows:
+  tts_data:
+
+networks:
+  local:
