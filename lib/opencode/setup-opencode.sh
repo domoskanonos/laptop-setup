@@ -15,14 +15,14 @@ setup_opencode() {
     log "Lade OpenCode herunter und installiere die Binary..."
     curl -fsSL https://opencode.ai/install | bash
 
-    log "Installiere opencode.jsonc nach ~/.config/opencode/"
+    log "Installiere .opencode nach ~/.config/opencode/"
     mkdir -p "$HOME/.config/opencode"
     opencode_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    cp "$opencode_dir/opencode.jsonc" "$HOME/.config/opencode/opencode.jsonc"
+    cp -r "$opencode_dir/.opencode" "$HOME/.config/opencode/"
 
     log "Kopiere opencode_cron.sh nach ~/.local/bin/"
     mkdir -p "$HOME/.local/bin"
-    cp "$opencode_dir/opencode_cron.sh" "$HOME/.local/bin/opencode_cron.sh"
+    cp "$opencode_dir/.local/bin/opencode_cron.sh" "$HOME/.local/bin/opencode_cron.sh"
 
     log "OpenCode erfolgreich installiert und konfiguriert!"
 }
