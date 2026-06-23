@@ -18,7 +18,7 @@ setup_opencode() {
     log "Installiere opencode nach ~/.config/opencode/"
     mkdir -p "$HOME/.config/opencode"
     opencode_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    cp -r "$opencode_dir/config/" "$HOME/.config/opencode/"
+    cp -r "$opencode_dir/config/." "$HOME/.config/opencode/"
 
     log "Kopiere opencode_cron.sh nach ~/.local/bin/"
     mkdir -p "$HOME/.local/bin"

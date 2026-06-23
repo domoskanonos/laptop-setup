@@ -4,6 +4,11 @@
     "mcp_timeout": 3600000
   },
   "mcp": {
+    "quisy-tts": {
+      "enabled": true,
+      "type": "remote",
+      "url": "http://127.0.0.1:8045/interface/mcp"
+    },
     "mcp-pandoc": {
       "command": [
         "uvx",
