@@ -13,6 +13,7 @@ setup_basic() {
     ensure_package wget
     ensure_package openssh-server
     ensure_package snapd
+    ensure_package util-linux-extra
 
     log "Aktiviere Dienste"
     ensure_service_running ssh

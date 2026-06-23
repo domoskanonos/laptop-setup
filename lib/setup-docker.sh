@@ -43,5 +43,6 @@ setup_docker() {
     sudo usermod -aG docker "$USER"
 
     log "Docker-Setup erfolgreich abgeschlossen!"
-    log "Hinweis: Für Docker-Zugriff bitte aus- und wieder einloggen oder 'newgrp docker' ausfuehren"
+    log "Hinweis: Für sofortigen Zugriff 'sg docker -c bash' ausfuehren"
+    log "         Fuer dauerhaften Zugriff komplett aus- und wieder einloggen"
 }
