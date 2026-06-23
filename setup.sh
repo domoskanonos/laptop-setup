@@ -14,6 +14,13 @@ fi
 [[ "$EUID" -ne 0 ]] || die "Bitte setup.sh als normaler Benutzer starten, nicht als root."
 
 source "$SCRIPT_DIR/lib/setup-basic.sh"
+setup_basic
+
+source "$SCRIPT_DIR/lib/setup-git.sh"
+setup_git
+
 source "$SCRIPT_DIR/lib/setup-uv.sh"
+setup_uv
+
 
 log "Setup abgeschlossen"

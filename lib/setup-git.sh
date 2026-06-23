@@ -4,20 +4,12 @@ fi
 
 GIT_USER_NAME="${GIT_USER_NAME:-Dominik Bruhn}"
 GIT_USER_EMAIL="${GIT_USER_EMAIL:-domoskanonos@googlemail.com}"
-SSH_KEY_PATH="${SSH_KEY_PATH:-$HOME/.ssh/id_ed25519}"
-
-setup_ssh() {
-    log "Pruefe SSH-Key"
-    mkdir -p "$HOME/.ssh"
-    chmod 700 "$HOME/.ssh"
-    [[ -f "$SSH_KEY_PATH" ]] || die "SSH private key fehlt: $SSH_KEY_PATH"
-    chmod 600 "$SSH_KEY_PATH"
-    if [[ -f "${SSH_KEY_PATH}.pub" ]]; then
-        chmod 644 "${SSH_KEY_PATH}.pub"
-    fi
-}
 
 setup_git() {
+
+    log "Installiere Git"
+    ensure_package git
+
     log "Konfiguriere Git"
     local current_git_name current_git_email
 
@@ -36,9 +28,4 @@ setup_git() {
     else
         log "git user.email bereits korrekt"
     fi
-}
-
-setup_git_ssh() {
-    setup_ssh
-    setup_git
 }
