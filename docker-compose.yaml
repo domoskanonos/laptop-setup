@@ -1,25 +1,33 @@
 services:
   comfyui:
-    image: ghcr.io/comfyanonymous/comfyui:latest
+    image: yanwk/comfyui-boot:cu128-slim
     container_name: comfyui
-    ports:
-      - "8188:8188"
-    volumes:
-      - comfyui-models:/comfyui/models
-      - comfyui-input:/comfyui/input
-      - comfyui-output:/comfyui/output
-      - comfyui-custom-nodes:/comfyui/custom_nodes
     restart: unless-stopped
+    ports:
+      - "8008:8188"
+    environment:
+      - CLI_ARGS=--disable-xformers --disable-smart-memory
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]
+    volumes:
+      - comfyui_root:/root
+      - comfyui_models:/root/ComfyUI/models
+      - comfyui_hf_hub:/root/.cache/huggingface/hub
+      - comfyui_torch_hub:/root/.cache/torch/hub
+      - comfyui_input:/root/ComfyUI/input
+      - comfyui_output:/root/ComfyUI/output
+      - comfyui_workflows:/root/ComfyUI/user/default/workflows
 
 volumes:
-  comfyui-models:
-  comfyui-input:
-  comfyui-output:
-  comfyui-custom-nodes:
+  comfyui_root:
+  comfyui_models:
+  comfyui_hf_hub:
+  comfyui_torch_hub:
+  comfyui_input:
+  comfyui_output:
+  comfyui_workflows:
