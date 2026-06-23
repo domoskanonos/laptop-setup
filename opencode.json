@@ -1,0 +1,77 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "experimental": {
+    "mcp_timeout": 3600000
+  },
+  "mcp": {
+    "mcp-pandoc": {
+      "command": [
+        "uvx",
+        "mcp-pandoc"
+      ],
+      "enabled": true,
+      "environment": {},
+      "type": "local"
+    },
+    "memory": {
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "environment": {
+        "MEMORY_FILE_PATH": "./memory.jsonl"
+      },
+      "enabled": true,
+      "type": "local"
+    },
+    "open-websearch": {
+      "command": [
+        "npx",
+        "-y",
+        "open-websearch"
+      ],
+      "environment": {
+        "MODE": "stdio",
+        "DEFAULT_SEARCH_ENGINE": "duckduckgo"
+      },
+      "enabled": true,
+      "type": "local"
+    },
+    "sqlite-tools": {
+      "command": [
+        "npx",
+        "-y",
+        "mcp-sqlite-tools"
+      ],
+      "enabled": true,
+      "environment": {
+        "SQLITE_ALLOW_ABSOLUTE_PATHS": "true",
+        "SQLITE_BACKUP_PATH": "./backups",
+        "SQLITE_DEFAULT_PATH": "."
+      },
+      "type": "local"
+    }
+  },
+  "permission": {
+    "*": "allow",
+    "google_search": "deny"
+  },
+  "plugin": [
+  ],
+  "provider": {
+    "ollama": {
+      "models": {
+        "gemma4:e4b": {
+          "_launch": true,
+          "name": "qwen3.5:4b"
+        }
+      },
+      "name": "Ollama",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
+      }
+    }
+  }
+}
