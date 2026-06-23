@@ -20,6 +20,7 @@ setup_basic() {
     ensure_package imagemagick
     ensure_package sox
     ensure_package sonic-visualiser
+    ensure_package wkhtmltopdf
 
     log "Aktiviere Dienste"
     ensure_service_running ssh
