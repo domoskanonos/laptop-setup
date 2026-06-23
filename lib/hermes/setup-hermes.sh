@@ -96,6 +96,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 EnvironmentFile=%h/.hermes/.env
+Environment=PATH=%h/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ExecStart=%h/.local/bin/hermes dashboard --host ${HERMES_DASHBOARD_HOST} --port ${HERMES_DASHBOARD_PORT} --no-open
 Restart=always
 RestartSec=3
