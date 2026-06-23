@@ -42,7 +42,7 @@ echo "Erstelle Desktop-Starter..."
 
 cat <<EOF > "$DESKTOP_FILE"
 [Desktop Entry]
-Name=BambuStudio
+Name=Bambu
 Exec=env LANG=en_US.UTF-8 $APPIMAGE_PATH
 Icon=$ICON_PATH
 Type=Application
