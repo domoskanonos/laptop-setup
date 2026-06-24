@@ -9,6 +9,13 @@
       "type": "remote",
       "url": "http://127.0.0.1:8045/interface/mcp"
     },
+    "comfyui": {
+      "command": "npx",
+      "args": ["-y", "comfyui-mcp"],
+      "env": {
+      },
+      "enabled": true
+    },
     "mcp-pandoc": {
       "command": [
         "uvx",
