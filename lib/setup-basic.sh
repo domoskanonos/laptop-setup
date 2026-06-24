@@ -17,6 +17,7 @@ setup_basic() {
     ensure_package pandoc
     ensure_package calibre
     ensure_package nodejs
+    ensure_package npm
     ensure_package ffmpeg
     ensure_package imagemagick
     ensure_package sox
