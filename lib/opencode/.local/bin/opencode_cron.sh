@@ -25,7 +25,7 @@ fi
 cd "$WORKSPACE_DIR" || exit 1
 
 # --- 3. Cron-Environment erzwingen ---
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin:$HOME/.nvm/versions/node/v22/bin
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin:$HOME/.opencode/bin:$HOME/.nvm/versions/node/v22/bin
 export HOME=/home/laptop
 export USER=laptop
 
@@ -47,7 +47,7 @@ echo "Zeitpunkt:   $(date)" >> "$LOG_FILE"
 echo "=====================================================" >> "$LOG_FILE"
 
 # Führe OpenCode mit dem Inhalt der Datei aus und setze ein Timeout (z.B. 30 Minuten)
-timeout 30m opencode "$PROMPT_CONTENT" >> "$LOG_FILE" 2>&1
+timeout 30m opencode run --dir "$WORKSPACE_DIR" "$PROMPT_CONTENT" >> "$LOG_FILE" 2>&1
 
 EXIT_CODE=$?
 
