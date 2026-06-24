@@ -72,11 +72,6 @@
   },
   "provider": {
     "ollama": {
-      "name": "Ollama",
-      "npm": "@ai-sdk/openai-compatible",
-      "options": {
-        "baseURL": "http://127.0.0.1:11434/v1"
-      },
       "models": {
         "qwen3.5:4b": {
           "maxTokens": 32768,
@@ -87,6 +82,11 @@
           },
           "tool_call": true
         }
+      },
+      "name": "Ollama",
+      "npm": "@ai-sdk/openai-compatible",
+      "options": {
+        "baseURL": "http://127.0.0.1:11434/v1"
       }
     },
     "opencode": {
