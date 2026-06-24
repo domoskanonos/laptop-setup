@@ -10,11 +10,13 @@
       "url": "http://127.0.0.1:8045/interface/mcp"
     },
     "comfyui": {
-      "command": "npx",
-      "args": ["-y", "comfyui-mcp"],
-      "env": {
-      },
-      "enabled": true
+      "command": [
+        "npx",
+        "comfyui-mcp"
+      ],
+      "enabled": true,
+      "environment": {},
+      "type": "local"
     },
     "mcp-pandoc": {
       "command": [
@@ -69,8 +71,7 @@
     "*": "allow",
     "google_search": "deny"
   },
-  "plugin": [
-  ],
+  "plugin": [],
   "agent": {
     "build": {
       "steps": 25,
