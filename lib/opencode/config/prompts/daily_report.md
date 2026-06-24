@@ -20,7 +20,7 @@ Erstelle einen täglichen Report (Daily Report) im EPUB-Format. Der Report soll 
 
 - Konvertiere den Report ins **EPUB-Format** (z. B. mit MCP Pandoc).
 - Speichere die Datei unter:  
-  `~/Dokumente/daily-report_<YYYY-MM-DD>.epub`
+  `daily-report_<YYYY-MM-DD>.epub`
 - Der Dateiname soll das aktuelle Datum im ISO-Format (YYYY-MM-DD) enthalten.
 
 ## Formatierung
@@ -41,5 +41,5 @@ Erstelle einen täglichen Report (Daily Report) im EPUB-Format. Der Report soll 
 4. Web-Suche / API-Abfrage für aktuelle Temperatur in Dortmund.
 5. Aus den gesammelten Daten einen Markdown-Text erstellen.
 6. Markdown mit MCP Pandoc nach EPUB konvertieren:  
-   `~/Dokumente/daily-report_<DATUM>.epub`
+   `daily-report_<DATUM>.epub`
 7. Erfolgsmeldung ausgeben.
