@@ -20,9 +20,14 @@ setup_bambu() {
         mkdir -p "$HOME/.local/share/icons"
 
         log "Suche nach der neuesten BambuStudio Version..."
-        local download_url
+        local ubuntu_version appimage_suffix download_url
+        ubuntu_version=$(lsb_release -rs 2>/dev/null || echo "22.04")
+        case "$ubuntu_version" in
+            24.04*) appimage_suffix="ubuntu24.04" ;;
+            *)      appimage_suffix="ubuntu22.04" ;;
+        esac
         download_url=$(curl -s https://api.github.com/repos/bambulab/BambuStudio/releases/latest \
-          | grep -oP '"browser_download_url": "\K[^"]+\.AppImage' \
+          | grep -oP '"browser_download_url": "\K[^"]+'$appimage_suffix'[^"]+\.AppImage' \
           | head -n 1)
 
         if [[ -z "$download_url" ]]; then

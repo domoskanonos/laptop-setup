@@ -53,7 +53,13 @@ source lib/setup-bambu.sh && setup_bambu
 | `lib/setup-nvidia.sh` | `setup_nvidia` | Installiert NVIDIA Container Toolkit für GPU-Unterstützung in Docker |
 | `lib/setup-docker.sh` | `setup_docker` | Installiert Docker, Docker Compose und aktiviert den Dienst |
 | `lib/opencode/setup-opencode.sh` | `setup_opencode` | Installiert OpenCode CLI und kopiert Konfiguration |
-| `lib/opencode/opencode.jsonc` | — | OpenCode-Konfiguration mit MCP-Servern und Ollama-Provider |
+| `lib/opencode/config/opencode.jsonc` | — | OpenCode-Konfiguration mit MCP-Servern und Ollama-Provider |
+| `lib/opencode/config/.env_example` | — | Vorlage für OpenCode-API-Key |
+| `lib/opencode/config/prompts/daily_report.md` | — | Promptvorlage für taeglichen Report |
+| `lib/opencode/config/skills/task-create/SKILL.md` | — | Skill: zeitgesteuerten Task anlegen |
+| `lib/opencode/config/skills/task-delete/SKILL.md` | — | Skill: Task loeschen |
+| `lib/opencode/config/skills/task-list/SKILL.md` | — | Skill: Tasks auflisten |
+| `lib/opencode/.local/bin/opencode_cron.sh` | — | Cron-Wrapper fuer geplante Tasks |
 
 ## Projektstruktur
 
@@ -78,7 +84,17 @@ source lib/setup-bambu.sh && setup_bambu
 │   ├── setup-bambu.sh        # BambuStudio-Installation
 │   ├── setup-whatsapp.sh     # WhatsApp-Desktop (whatsdev)
 │   └── opencode/
-│       ├── setup-opencode.sh # OpenCode CLI-Installation
-│       └── opencode.jsonc    # OpenCode-Konfiguration
+│       ├── setup-opencode.sh       # OpenCode CLI-Installation
+│       ├── .local/bin/
+│       │   └── opencode_cron.sh    # Cron-Wrapper
+│       └── config/
+│           ├── .env_example        # OpenCode-API-Key-Vorlage
+│           ├── opencode.jsonc      # OpenCode-Konfiguration
+│           ├── prompts/
+│           │   └── daily_report.md # Promptvorlage
+│           └── skills/
+│               ├── task-create/SKILL.md
+│               ├── task-delete/SKILL.md
+│               └── task-list/SKILL.md
 └── README.md
 ```
