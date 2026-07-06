@@ -43,7 +43,7 @@ source lib/setup-bambu.sh && setup_bambu
 |---|---|---|
 | `lib/common.sh` | — | Gemeinsame Helfer (`log`, `die`, `ensure_package`, `load_env_file` u. a.) |
 | `lib/setup-basic.sh` | `setup_basic` | System-Update, Basispakete (curl, git, wget, openssh-server, snapd, util-linux-extra), GNOME-Einstellungen |
-| `lib/setup-vscode.sh` | `setup_vscode` | Installiert Visual Studio Code per Snap |
+| `lib/setup-vscode.sh` | `setup_vscode` | Installiert Visual Studio Code per Microsoft-Repository (apt) |
 | `lib/setup-git.sh` | `setup_git` | Setzt `git user.name` und `user.email` |
 | `lib/setup-ssh.sh` | `setup_ssh` | Prüft SSH-Key und setzt Berechtigungen (Standalone einsetzbar) |
 | `lib/setup-uv.sh` | `setup_uv` | Installiert uv (Python-Paketmanager) |
