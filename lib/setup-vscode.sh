@@ -6,13 +6,21 @@ setup_vscode() {
     log "Aktualisiere Paketquellen..."
     "${APT_ENV[@]}" apt-get update
 
-    if ! command_exists snap; then
-        log "Snap ist nicht installiert. Installiere snapd..."
-        "${APT_ENV[@]}" apt-get install -y snapd
-    fi
+    log "Installiere Abhängigkeiten..."
+    ensure_package wget gpg
 
-    log "Installiere Visual Studio Code aus dem Snap Store..."
-    sudo snap install code --classic
+    log "Füge Microsoft GPG-Schlüssel hinzu..."
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/ms-vscode-keyring.gpg
+    sudo install -D -o root -g root -m 644 /tmp/ms-vscode-keyring.gpg /usr/share/keyrings/ms-vscode-keyring.gpg
+    rm -f /tmp/ms-vscode-keyring.gpg
+
+    log "Füge VS Code Repository hinzu..."
+    echo "deb [signed-by=/usr/share/keyrings/ms-vscode-keyring.gpg] https://packages.microsoft.com/repos/code stable main" | \
+        sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
+
+    log "Installiere Visual Studio Code..."
+    "${APT_ENV[@]}" apt-get update
+    ensure_package code
 
     log "Installation abgeschlossen!"
 }
