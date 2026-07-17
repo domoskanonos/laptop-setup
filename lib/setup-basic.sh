@@ -22,6 +22,7 @@ setup_basic() {
     ensure_package imagemagick
     ensure_package mpv
     ensure_package sox
+    ensure_package streamripper
     ensure_package texlive-latex-recommended
     ensure_package texlive-fonts-recommended
 
