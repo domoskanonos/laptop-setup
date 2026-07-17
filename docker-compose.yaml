@@ -57,7 +57,8 @@ services:
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - /media:/media:ro
+      #- /home/laptop/Musik:/media/music:ro
+      - /home/laptop/Musik:/media/music:ro
     networks:
       - local
 
