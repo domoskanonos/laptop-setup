@@ -83,7 +83,7 @@
   "plugin": [],
   "agent": {
     "build": {
-      "steps": 25,
+      "steps": 9999,
       "model": "opencode/deepseek-v4-flash-free"
     }
   },
