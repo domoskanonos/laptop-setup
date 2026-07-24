@@ -1,5 +1,5 @@
 if ! declare -f log >/dev/null 2>&1; then
-    source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
+    source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../common/common.sh"
 fi
 
 OLLAMA_DEFAULT_MODEL="${OLLAMA_DEFAULT_MODEL:-qwen3.5:4b}"

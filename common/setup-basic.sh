@@ -13,25 +13,13 @@ setup_basic() {
     ensure_package wget
     ensure_package openssh-server
     ensure_package snapd
-    ensure_package util-linux-extra
     ensure_package pandoc
-    ensure_package calibre
     ensure_package nodejs
     ensure_package npm
     ensure_package ffmpeg
-    ensure_package imagemagick
-    ensure_package mpv
-    ensure_package sox
-    ensure_package vlc
-    ensure_package texlive-latex-recommended
-    ensure_package texlive-fonts-recommended
 
     log "Aktiviere Dienste"
     ensure_service_running ssh
     ensure_service_running snapd
     sudo systemctl start snapd.socket >/dev/null 2>&1 || true
-
-    log "Konfiguriere GNOME Desktop"
-    gsettings set org.gnome.shell.extensions.ding show-trash false 2>/dev/null || true
-    gsettings set org.gnome.shell.extensions.ding show-home false 2>/dev/null || true
 }

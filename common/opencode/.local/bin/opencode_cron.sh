@@ -18,7 +18,6 @@ fi
 if [ -n "$2" ] && [ -d "$2" ]; then
     WORKSPACE_DIR="$2"
 else
-    # Fallback-Verzeichnis, falls kein zweiter Parameter übergeben wird
     WORKSPACE_DIR="/home/laptop/_dev/repositories"
 fi
 
@@ -28,7 +27,6 @@ cd "$WORKSPACE_DIR" || exit 1
 export HOME="${HOME:-/home/laptop}"
 export USER="${USER:-laptop}"
 
-# Node.js-Pfad ueber NVM aufloesen (fallback auf v22)
 if [ -f "$HOME/.nvm/nvm.sh" ]; then
     . "$HOME/.nvm/nvm.sh"
     NVM_NODE_DIR="$(dirname "$(nvm which current 2>/dev/null)" 2>/dev/null)"
@@ -36,14 +34,12 @@ fi
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$HOME/.local/bin:$HOME/.opencode/bin:${NVM_NODE_DIR:-$HOME/.nvm/versions/node/v22/bin}"
 
 # --- 4. Dynamisches Logging aufbauen ---
-# Isoliert den Dateinamen (z.B. "daily_podcast" aus "daily_podcast.md")
 TASK_NAME=$(basename "$PROMPT_FILE" .md)
 LOG_DIR="/home/laptop/logs/opencode"
 mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/${TASK_NAME}.log"
 
 # --- 5. Prompt einlesen und ausführen ---
-# Wir lesen den Inhalt der Markdown-Datei in eine Variable
 PROMPT_CONTENT=$(cat "$PROMPT_FILE")
 
 echo "=====================================================" >> "$LOG_FILE"
@@ -52,7 +48,6 @@ echo "Verzeichnis: $WORKSPACE_DIR" >> "$LOG_FILE"
 echo "Zeitpunkt:   $(date)" >> "$LOG_FILE"
 echo "=====================================================" >> "$LOG_FILE"
 
-# Führe OpenCode mit dem Inhalt der Datei aus und setze ein Timeout (z.B. 30 Minuten)
 timeout 30m opencode run --dir "$WORKSPACE_DIR" "$PROMPT_CONTENT" >> "$LOG_FILE" 2>&1
 
 EXIT_CODE=$?

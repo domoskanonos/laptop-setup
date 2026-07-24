@@ -1,53 +1,4 @@
 services:
-  comfyui:
-    image: yanwk/comfyui-boot:cu130-slim-v2
-    container_name: comfyui
-    restart: unless-stopped
-    ports:
-      - "8188:8188"
-    environment:
-      - CLI_ARGS=--disable-xformers --disable-smart-memory
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
-    volumes:
-      - comfyui_root:/root
-      - comfyui_models:/root/ComfyUI/models
-      - comfyui_hf_hub:/root/.cache/huggingface/hub
-      - comfyui_torch_hub:/root/.cache/torch/hub
-      - comfyui_input:/root/ComfyUI/input
-      - comfyui_output:/root/ComfyUI/output
-      - comfyui_workflows:/root/ComfyUI/user/default/workflows
-    networks:
-      - local
-
-  tts:
-    image: domoskanonos/quisy-tts:0.39.1
-    #image: quisy-tts:latest
-    container_name: tts
-    restart: unless-stopped
-    ports:
-      - "8045:8045"
-    volumes:
-      - tts_data:/app
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [ gpu ]
-    environment:
-      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-      - DEVICE=cuda
-      - MODEL_SIZE=1.7
-    networks:
-      - local
-
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
@@ -57,7 +8,6 @@ services:
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      #- /home/laptop/Musik:/media/music:ro
       - /home/laptop/Musik:/media/music:ro
     networks:
       - local
@@ -129,31 +79,6 @@ services:
     networks:
       - local
 
-  dozzle:
-    image: docker.io/amir20/dozzle:latest
-    container_name: dozzle
-    restart: unless-stopped
-    ports:
-      - "8002:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - local
-
-  freshrss:
-    image: freshrss/freshrss:latest
-    container_name: freshrss
-    restart: unless-stopped
-    ports:
-      - "8010:80"
-    volumes:
-      - freshrss_data:/var/www/FreshRSS/data
-      - freshrss_extensions:/var/www/FreshRSS/extensions
-    environment:
-      - CRON_MIN='3,33'
-    networks:
-      - local
-
   navidrome:
     image: deluan/navidrome:latest
     container_name: navidrome
@@ -174,7 +99,7 @@ services:
     restart: unless-stopped
     user: "1000:1000"
     environment:
-      - ACCOUST_ID=disabled
+      - ACCOUST_ID=${ACCOUST_ID:-disabled}
     volumes:
       - radio-ripper_config:/app/config:ro
       - radio-ripper_work:/app/work
@@ -182,18 +107,35 @@ services:
     networks:
       - local
 
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: unless-stopped
+    ports:
+      - "8010:80"
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
+    environment:
+      - CRON_MIN='3,33'
+    networks:
+      - local
+
+  dozzle:
+    image: docker.io/amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8002:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - local
+
 volumes:
   navidrome_data:
   radio-ripper_config:
   radio-ripper_work:
-  comfyui_root:
-  comfyui_models:
-  comfyui_hf_hub:
-  comfyui_torch_hub:
-  comfyui_input:
-  comfyui_output:
-  comfyui_workflows:
-  tts_data:
   jellyfin_config:
   jellyfin_cache:
   immich_data:
