@@ -154,7 +154,20 @@ services:
     networks:
       - local
 
+  radio-ripper:
+    image: domoskanonos/radioripper:2.1.0
+    container_name: radio-ripper
+    restart: unless-stopped
+    user: "1000:1000"
+    volumes:
+      - radio-ripper_config:/app/config:ro
+      - /home/laptop/Musik:/app/recordings
+    command: ["--config", "/app/config/config.json"]
+    networks:
+      - local
+
 volumes:
+  radio-ripper_config:
   comfyui_root:
   comfyui_models:
   comfyui_hf_hub:
