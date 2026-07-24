@@ -154,20 +154,38 @@ services:
     networks:
       - local
 
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    ports:
+      - "4533:4533"
+    environment:
+      - ND_SCANSCHEDULE=1hour
+    volumes:
+      - navidrome_data:/data
+      - /home/laptop/Musik:/music:ro
+    networks:
+      - local
+
   radio-ripper:
-    image: domoskanonos/radioripper:2.1.0
+    image: domoskanonos/radioripper:latest
     container_name: radio-ripper
     restart: unless-stopped
     user: "1000:1000"
+    environment:
+      - ACCOUST_ID=disabled
     volumes:
       - radio-ripper_config:/app/config:ro
+      - radio-ripper_work:/app/work
       - /home/laptop/Musik:/app/recordings
-    command: ["--config", "/app/config/config.json"]
     networks:
       - local
 
 volumes:
+  navidrome_data:
   radio-ripper_config:
+  radio-ripper_work:
   comfyui_root:
   comfyui_models:
   comfyui_hf_hub:
