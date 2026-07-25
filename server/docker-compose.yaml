@@ -173,6 +173,9 @@ services:
       - freshrss_data:/var/www/FreshRSS/data
       - freshrss_extensions:/var/www/FreshRSS/extensions
     environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
+      - ADMIN_API_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
       - CRON_MIN='3,33'
     networks:
       - local
