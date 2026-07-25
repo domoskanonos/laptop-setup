@@ -5,6 +5,11 @@ services:
     restart: unless-stopped
     ports:
       - "8096:8096"
+    labels:
+      - flame.type=application
+      - flame.name=Jellyfin
+      - flame.url=http://${HOST}:8096
+      - flame.icon=jellyfin
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
@@ -15,6 +20,11 @@ services:
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    labels:
+      - flame.type=application
+      - flame.name=Immich
+      - flame.url=http://${HOST}:2283
+      - flame.icon=immich
     volumes:
       - immich_data:/data
       - /etc/localtime:/etc/localtime:ro
@@ -100,39 +110,15 @@ services:
     ports:
       - "5005:5005"
     environment:
-      - PASSWORD=${FLAME_PASSWORD:-flame}
+      - PASSWORD=${DEFAULT_PASS:-flame}
     volumes:
       - flame_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - flame.type=application
       - flame.name=Flame
       - flame.url=http://${HOST}:5005
       - flame.icon=flame
-
-      - flame.type=application
-      - flame.name=Jellyfin
-      - flame.url=http://${HOST}:8096
-      - flame.icon=jellyfin
-
-      - flame.type=application
-      - flame.name=Immich
-      - flame.url=http://${HOST}:2283
-      - flame.icon=immich
-
-      - flame.type=application
-      - flame.name=Navidrome
-      - flame.url=http://${HOST}:4533
-      - flame.icon=music
-
-      - flame.type=application
-      - flame.name=FreshRSS
-      - flame.url=http://${HOST}:8010
-      - flame.icon=rss
-
-      - flame.type=application
-      - flame.name=Dozzle
-      - flame.url=http://${HOST}:8002
-      - flame.icon=docker
     networks:
       - local
 
