@@ -93,6 +93,11 @@ services:
     image: deluan/navidrome:latest
     container_name: navidrome
     restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Navidrome
+      - flame.url=http://${HOST}:4533
+      - flame.icon=music
     ports:
       - "4533:4533"
     environment:
@@ -126,6 +131,11 @@ services:
     image: nginx:alpine
     container_name: nginx
     restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Webroot
+      - flame.url=http://${HOST}:8080
+      - flame.icon=file
     ports:
       - "8080:80"
     volumes:
