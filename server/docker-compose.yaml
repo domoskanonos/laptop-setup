@@ -8,7 +8,7 @@ services:
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - /home/laptop/Musik:/media/music:ro
+      - /home/laptop/Video:/media/video:ro
     networks:
       - local
 
@@ -93,19 +93,73 @@ services:
     networks:
       - local
 
-  radio-ripper:
-    image: domoskanonos/radioripper:latest
-    container_name: radio-ripper
+  flame:
+    image: pawelmalak/flame:latest
+    container_name: flame
     restart: unless-stopped
-    user: "1000:1000"
+    ports:
+      - "5005:5005"
     environment:
-      - ACCOUST_ID=${ACCOUST_ID:-disabled}
+      - PASSWORD=${FLAME_PASSWORD:-flame}
     volumes:
-      - radio-ripper_config:/app/config:ro
-      - radio-ripper_work:/app/work
-      - /home/laptop/Musik:/app/recordings
+      - flame_data:/app/data
+    labels:
+      - flame.type=application
+      - flame.name=Flame
+      - flame.url=http://${HOST}:5005
+      - flame.icon=flame
+
+      - flame.type=application
+      - flame.name=Jellyfin
+      - flame.url=http://${HOST}:8096
+      - flame.icon=jellyfin
+
+      - flame.type=application
+      - flame.name=Immich
+      - flame.url=http://${HOST}:2283
+      - flame.icon=immich
+
+      - flame.type=application
+      - flame.name=Navidrome
+      - flame.url=http://${HOST}:4533
+      - flame.icon=music
+
+      - flame.type=application
+      - flame.name=FreshRSS
+      - flame.url=http://${HOST}:8010
+      - flame.icon=rss
+
+      - flame.type=application
+      - flame.name=Dozzle
+      - flame.url=http://${HOST}:8002
+      - flame.icon=docker
     networks:
       - local
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - /home/laptop/web:/usr/share/nginx/html:ro
+    networks:
+      - local
+
+  # radio-ripper:
+  #   image: domoskanonos/radioripper:latest
+  #   container_name: radio-ripper
+  #   restart: unless-stopped
+  #   user: "1000:1000"
+  #   environment:
+  #     - ACCOUST_ID=${ACCOUST_ID:-disabled}
+  #   volumes:
+  #     - radio-ripper_config:/app/config:ro
+  #     - radio-ripper_work:/app/work
+  #     - /home/laptop/Musik:/app/recordings
+  #   networks:
+  #     - local
 
   freshrss:
     image: freshrss/freshrss:latest
@@ -136,6 +190,7 @@ volumes:
   navidrome_data:
   radio-ripper_config:
   radio-ripper_work:
+  flame_data:
   jellyfin_config:
   jellyfin_cache:
   immich_data:
