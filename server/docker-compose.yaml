@@ -161,6 +161,11 @@ services:
     image: freshrss/freshrss:latest
     container_name: freshrss
     restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=FreshRSS
+      - flame.url=http://${HOST}:8010
+      - flame.icon=rss
     ports:
       - "8010:80"
     volumes:
@@ -175,6 +180,11 @@ services:
     image: docker.io/amir20/dozzle:latest
     container_name: dozzle
     restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Dozzle
+      - flame.url=http://${HOST}:8002
+      - flame.icon=docker
     ports:
       - "8002:8080"
     volumes:
