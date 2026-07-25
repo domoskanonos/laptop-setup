@@ -27,10 +27,11 @@ services:
       - flame.icon=immich
     volumes:
       - immich_data:/data
+      - /home/laptop/Bilder:/data/library
       - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=${TZ:-Europe/Berlin}
-      - DB_PASSWORD=${IMMICH_DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
       - DB_USERNAME=postgres
       - DB_DATABASE_NAME=immich
       - DB_HOSTNAME=immich-database
@@ -54,7 +55,7 @@ services:
     volumes:
       - immich_model_cache:/cache
     environment:
-      - DB_PASSWORD=${IMMICH_DB_PASSWORD:-postgres}
+      - DB_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
       - DB_USERNAME=postgres
       - DB_DATABASE_NAME=immich
       - DB_HOSTNAME=immich-database
@@ -73,7 +74,7 @@ services:
     container_name: immich_postgres
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     environment:
-      - POSTGRES_PASSWORD=${IMMICH_DB_PASSWORD:-postgres}
+      - POSTGRES_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
       - POSTGRES_USER=postgres
       - POSTGRES_DB=immich
       - POSTGRES_INITDB_ARGS=--data-checksums
@@ -115,7 +116,7 @@ services:
     ports:
       - "5005:5005"
     environment:
-      - PASSWORD=${DEFAULT_PASS:-flame}
+      - PASSWORD=${DEFAULT_USER_PASSWORD:-flame}
     volumes:
       - flame_data:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
