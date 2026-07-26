@@ -144,19 +144,14 @@ services:
     networks:
       - local
 
-  # radio-ripper:
-  #   image: domoskanonos/radioripper:latest
-  #   container_name: radio-ripper
-  #   restart: unless-stopped
-  #   user: "1000:1000"
-  #   environment:
-  #     - ACCOUST_ID=${ACCOUST_ID:-disabled}
-  #   volumes:
-  #     - radio-ripper_config:/app/config:ro
-  #     - radio-ripper_work:/app/work
-  #     - /home/laptop/Musik:/app/recordings
-  #   networks:
-  #     - local
+  radioripper:
+    image: domoskanonos/radio-ripper-stream:latest
+    container_name: radio-ripper
+    restart: unless-stopped
+    volumes:
+      - ./radio-ripper-mp3:/app/mp3_inbox
+      - ./radio-ripper-work:/app/work
+      - ./radio-ripper-temp:/app/temp
 
   freshrss:
     image: freshrss/freshrss:latest
@@ -198,8 +193,6 @@ services:
 
 volumes:
   navidrome_data:
-  radio-ripper_config:
-  radio-ripper_work:
   flame_data:
   jellyfin_config:
   jellyfin_cache:
