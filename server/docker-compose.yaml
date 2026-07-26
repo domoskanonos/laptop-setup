@@ -149,10 +149,9 @@ services:
     container_name: radio-ripper
     restart: unless-stopped
     volumes:
-      - ./radio-ripper-config:/app/config:ro
-      - ./radio-ripper-mp3:/app/mp3_inbox
-      - ./radio-ripper-work:/app/work
-
+      - radio-ripper_config:/app/config:ro
+      - /home/laptop/recordings:/app/mp3_inbox
+      - radio-ripper_work:/app/work
   freshrss:
     image: freshrss/freshrss:latest
     container_name: freshrss
@@ -192,6 +191,8 @@ services:
       - local
 
 volumes:
+  radio-ripper_config:
+  radio-ripper_work:
   navidrome_data:
   flame_data:
   jellyfin_config:
