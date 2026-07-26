@@ -149,9 +149,9 @@ services:
     container_name: radio-ripper
     restart: unless-stopped
     volumes:
+      - ./radio-ripper-config:/app/config:ro
       - ./radio-ripper-mp3:/app/mp3_inbox
       - ./radio-ripper-work:/app/work
-      - ./radio-ripper-temp:/app/temp
 
   freshrss:
     image: freshrss/freshrss:latest
