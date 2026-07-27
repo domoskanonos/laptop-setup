@@ -71,6 +71,7 @@ if [ -n "$TMDB_ID" ]; then
   TMDB_POSTER=$(python3 -c "import json; print(json.load(open('/tmp/tmdb_series.json')).get('poster_path','') or '')")
   TMDB_BACKDROP=$(python3 -c "import json; print(json.load(open('/tmp/tmdb_series.json')).get('backdrop_path','') or '')")
   TMDB_RATING=$(python3 -c "import json; print(json.load(open('/tmp/tmdb_series.json')).get('vote_average',''))")
+  TMDB_OVERVIEW=$(python3 -c "import json; print(json.load(open('/tmp/tmdb_series.json')).get('overview','') or '')")
 fi
 ```
 
@@ -114,7 +115,8 @@ fi
 │   ├── season-poster.jpg           ← TMDB-Staffelposter
 │   ├── thumb.jpg                   ← Jellyfin-Staffel-Thumb
 │   ├── SERIE - S01E01 - TITEL.mp4
-│   ├── SERIE - S01E01 - TITEL-thumb.jpg   ← Episode-Thumbnail (Frame)
+│   ├── SERIE - S01E01 - TITEL-thumb.jpg     ← Episode-Thumbnail (400x600)
+│   ├── SERIE - S01E01 - TITEL-backdrop.jpg  ← Episode-Backdrop (9:16 Hochkant 540x960)
 │   ├── SERIE - S01E02 - TITEL.mp4
 │   └── SERIE - S01E02 - TITEL-thumb.jpg
 ```
@@ -127,10 +129,11 @@ fi
 └── SERIE (JAHR).mp4
 ```
 
-### 5. Metadaten + Cover + Episode-Thumbnail (pro Datei)
+### 5. Metadaten + Covers + Episode-Description + Backdrop (pro Datei)
 
 **Variante A: series**
 ```bash
+# Synopsis kommt aus Schritt 2 (TMDB_OVERVIEW)
 for FILE in sortierte Liste; do
   dur=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$FILE" 2>/dev/null || echo "600")
   thumb_time=$(python3 -c "print(int($dur * 0.15))")
@@ -138,7 +141,7 @@ for FILE in sortierte Liste; do
   # Embedded Cover für attached_pic
   ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 /tmp/ep_cover.jpg
 
-  # Metadaten + Cover schreiben
+  # Metadaten + Cover + Synopsis schreiben
   ffmpeg -y -i "$FILE" -i /tmp/ep_cover.jpg \
     -map 0:v -map 0:a -map 1 -c copy \
     -metadata title="EPISODENTITEL" \
@@ -147,15 +150,21 @@ for FILE in sortierte Liste; do
     -metadata season_number="1" \
     -metadata date="$TMDB_YEAR" \
     -metadata genre="$TMDB_GENRES" \
+    -metadata synopsis="$TMDB_OVERVIEW" \
     -metadata comment="TMDB: ★ $TMDB_RATING" \
     -metadata:s:v:1 title="Album Cover" \
     -disposition:v:1 attached_pic \
     "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL.mp4"
 
-  # Externes Episode-Thumbnail für Jellyfin-Episodenansicht
+  # Externes Episode-Thumbnail (400x600, Jellyfin-Episodenansicht)
   ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 \
     -vf "scale=400:600:force_original_aspect_ratio=decrease,pad=400:600:(ow-iw)/2:(oh-ih)/2:color=black" \
     "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL-thumb.jpg"
+
+  # Externes Episode-Backdrop (9:16 Hochkant 540x960, Jellyfin-Detailansicht)
+  ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 \
+    -vf "crop=ih*9/16:ih:(iw-ih*9/16)/2:0,scale=540:960" \
+    "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL-backdrop.jpg"
 
   rm -f /tmp/ep_cover.jpg "$FILE"
 done
@@ -183,7 +192,8 @@ done
 
 - Tabelle: Quelle → Ziel (im Series/Movies-Pfad)
 - Existieren: `poster.jpg`, `fanart.jpg`, `Season XX/thumb.jpg`?
-- Pro Episode: `*-thumb.jpg` vorhanden? (prüfen, Liste zeigen)
+- Pro Episode: `*-thumb.jpg` + `*-backdrop.jpg` vorhanden? (prüfen, Liste zeigen)
+- Synopsis via ffprobe prüfen (Stichprobe)
 - Gelöschte Quelldateien
 
 ## Jellyfin-Cover-Strategie
@@ -195,9 +205,11 @@ done
 | `Season XX/thumb.jpg` | Staffel-Thumbnail | TMDB |
 | `Season XX/season-poster.jpg` | Staffel-Poster | TMDB |
 | `*-thumb.jpg` pro Episode | Episoden-Vorschaubild (Folgenansicht) | Frame aus Video bei 15% |
-| embedded `attached_pic` | Fallback in Datei selbst | Frame aus Video bei 15% |
+| `*-backdrop.jpg` pro Episode | Episoden-Hintergrund (Detailansicht) | Frame aus Video bei 15% (9:16 center-crop, 540x960) |
+| embedded `synopsis` in Datei | Episoden-Beschreibung | TMDB-Serien-Overview |
+| embedded `attached_pic` | Fallback-Cover in Datei selbst | Frame aus Video bei 15% |
 
-→ **embedded + extern = beides vorhanden** – Jellyfin nimmt das externe `*-thumb.jpg` für die Episodenansicht.
+→ **embedded + extern = beides vorhanden** – Jellyfin zeigt Thumbnail + Backdrop + Beschreibung in der Episodenansicht.
 
 ## Jellyfin-Einrichtung
 
