@@ -1,16 +1,15 @@
-# Video-Tagger + Organizer + optionaler Komprimierer
+# Video-Tagger + Organizer
 
-Taggt, ordnet und komprimiert nachträglich einen Ordner mit heruntergeladenen Videodateien.
-Holt echte Serienposter von TMDB und legt sie in der Jellyfin-kompatiblen Series/Movies-Struktur ab.
+Taggt, ordnet und bereitet nachträglich einen Ordner mit rohen Videodateien für Jellyfin auf.
+Holt echte Serienposter von TMDB, generiert Episode-Thumbnails und legt alles in der Jellyfin-kompatiblen Series/Movies-Struktur ab.
 
 ## Parameter
 
 | Platzhalter | Pflicht | Beschreibung |
 |---|---|---|
-| `QUELLE` | ja | Ordner mit den Videos (z.B. `./vids/garfield`) |
+| `QUELLE` | ja | Ordner mit den rohen Videos (z.B. `./vids/garfield`) |
 | `SERIE` | nein | Serien-/Filmname (wenn nicht angegeben, aus Dateinamen extrahiert) |
 | `TYP` | nein | `series` (Default) oder `movies` |
-| `KOMPRIMIEREN` | nein | `ja` oder `nein` (default: `nein`) |
 
 ## Voraussetzung: TMDB-API-Key
 
@@ -49,15 +48,7 @@ HR_Garfield_Monster Odie.mp4                      → Serie: Garfield,          
 KiKA_Pippi Langstrumpf_Pippi auf der Walz (1).mp4 → Serie: Pippi Langstrumpf, Titel: Pippi auf der Walz
 ```
 
-### 2. Teil-Videos zusammenführen (nur series)
-
-```bash
-# Erkennung: - Teil 1/2, _1_/_2_, (1)/(2) am Ende des Dateinamens
-# Nur concat wenn jede Part < 10 Min (sonst eigene Episoden)
-# ffmpeg -f concat -safe 0 -c copy
-```
-
-### 3. TMDB-Metadaten holen
+### 2. TMDB-Metadaten holen
 
 ```bash
 curl -s "https://api.themoviedb.org/3/search/tv?api_key=$TMDB_API_KEY&query=SERIE&language=de" -o /tmp/tmdb_search.json
@@ -83,7 +74,7 @@ if [ -n "$TMDB_ID" ]; then
 fi
 ```
 
-### 4. Poster von TMDB + Zielverzeichnis
+### 3. Poster von TMDB + Zielverzeichnis
 
 ```bash
 ROOT_DIR="$HOME/Videos/Series"
@@ -103,7 +94,6 @@ fi
 # Bei series: Season-Ordner
 if [ "$TYP" = "series" ]; then
   mkdir -p "$TARGET_DIR/Season 01"
-  # Season-Poster von TMDB
   curl -s "https://api.themoviedb.org/3/tv/$TMDB_ID/season/1?api_key=$TMDB_API_KEY&language=de" -o /tmp/tmdb_season.json
   SP=$(python3 -c "import json; print(json.load(open('/tmp/tmdb_season.json')).get('poster_path','') or '')")
   if [ -n "$SP" ]; then
@@ -113,17 +103,20 @@ if [ "$TYP" = "series" ]; then
 fi
 ```
 
-### 5. Verzeichnisstruktur
+### 4. Verzeichnisstruktur (Ziel)
 
 **Bei `TYP=series`:**
 ```
 ~/Videos/Series/SERIE/
-├── poster.jpg
-├── fanart.jpg
+├── poster.jpg                      ← TMDB-Serienposter
+├── fanart.jpg                      ← TMDB-Hintergrund
 ├── Season 01/
-│   ├── season-poster.jpg
-│   ├── thumb.jpg
-│   └── SERIE - S01E01 - EPISODENTITEL.ext
+│   ├── season-poster.jpg           ← TMDB-Staffelposter
+│   ├── thumb.jpg                   ← Jellyfin-Staffel-Thumb
+│   ├── SERIE - S01E01 - TITEL.mp4
+│   ├── SERIE - S01E01 - TITEL-thumb.jpg   ← Episode-Thumbnail (Frame)
+│   ├── SERIE - S01E02 - TITEL.mp4
+│   └── SERIE - S01E02 - TITEL-thumb.jpg
 ```
 
 **Bei `TYP=movies`:**
@@ -131,17 +124,21 @@ fi
 ~/Videos/Movies/SERIE (JAHR)/
 ├── poster.jpg
 ├── fanart.jpg
-└── SERIE (JAHR).ext
+└── SERIE (JAHR).mp4
 ```
 
-### 6. Metadaten + Cover schreiben
+### 5. Metadaten + Cover + Episode-Thumbnail (pro Datei)
 
 **Variante A: series**
 ```bash
 for FILE in sortierte Liste; do
   dur=$(ffprobe -v quiet -show_entries format=duration -of csv=p=0 "$FILE" 2>/dev/null || echo "600")
-  ffmpeg -y -ss "$(python3 -c "print(int($dur * 0.1))")" -i "$FILE" -frames:v 1 -q:v 2 /tmp/ep_cover.jpg
+  thumb_time=$(python3 -c "print(int($dur * 0.15))")
 
+  # Embedded Cover für attached_pic
+  ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 /tmp/ep_cover.jpg
+
+  # Metadaten + Cover schreiben
   ffmpeg -y -i "$FILE" -i /tmp/ep_cover.jpg \
     -map 0:v -map 0:a -map 1 -c copy \
     -metadata title="EPISODENTITEL" \
@@ -154,6 +151,11 @@ for FILE in sortierte Liste; do
     -metadata:s:v:1 title="Album Cover" \
     -disposition:v:1 attached_pic \
     "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL.mp4"
+
+  # Externes Episode-Thumbnail für Jellyfin-Episodenansicht
+  ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 \
+    -vf "scale=400:600:force_original_aspect_ratio=decrease,pad=400:600:(ow-iw)/2:(oh-ih)/2:color=black" \
+    "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL-thumb.jpg"
 
   rm -f /tmp/ep_cover.jpg "$FILE"
 done
@@ -177,26 +179,25 @@ for FILE in sortierte Liste; do
 done
 ```
 
-### 7. Optional: HEVC NVENC Kompression
-
-Nur wenn `KOMPRIMIEREN=ja` und:
-- Datei > 100 MB
-- Bitrate > 1.5 Mbps
-- Savings > 30%
-
-```bash
-ffmpeg -y -hwaccel cuda -i "EINGANG.mp4" \
-  -c:v hevc_nvenc -preset p6 -cq 20 -rc constqp \
-  -c:a aac -b:a 128k \
-  "VORSCHLAG.mkv"
-```
-
-### 8. Abschluss
+### 6. Abschluss
 
 - Tabelle: Quelle → Ziel (im Series/Movies-Pfad)
-- Existieren `poster.jpg`, `fanart.jpg`, `Season XX/thumb.jpg`?
-- Ersparnis bei Kompression
+- Existieren: `poster.jpg`, `fanart.jpg`, `Season XX/thumb.jpg`?
+- Pro Episode: `*-thumb.jpg` vorhanden? (prüfen, Liste zeigen)
 - Gelöschte Quelldateien
+
+## Jellyfin-Cover-Strategie
+
+| Datei | Wofür | Quelle |
+|---|---|---|
+| `poster.jpg` | Serien-Poster (Übersicht) | TMDB |
+| `fanart.jpg` | Hintergrund (Detailansicht) | TMDB |
+| `Season XX/thumb.jpg` | Staffel-Thumbnail | TMDB |
+| `Season XX/season-poster.jpg` | Staffel-Poster | TMDB |
+| `*-thumb.jpg` pro Episode | Episoden-Vorschaubild (Folgenansicht) | Frame aus Video bei 15% |
+| embedded `attached_pic` | Fallback in Datei selbst | Frame aus Video bei 15% |
+
+→ **embedded + extern = beides vorhanden** – Jellyfin nimmt das externe `*-thumb.jpg` für die Episodenansicht.
 
 ## Jellyfin-Einrichtung
 
@@ -209,7 +210,7 @@ Nach dem Scannen: **Bibliothek aktualisieren** in Jellyfin.
 
 ## Vorheriger Schritt
 
-Dieser Prompt verarbeitet Roh-Downloads. Falls du die Videos noch nicht hast:
+Falls du die Videos noch nicht hast, vorher den Downloader laufen lassen:
 
 ```
 @mediathekwebview
@@ -218,9 +219,18 @@ Serie: Garfield
 
 Dann `videotagger` auf den `./downloads/Garfield`-Ordner loslassen.
 
+## Nächster Schritt: Komprimierung
+
+Falls du die Dateien noch mit HEVC komprimieren willst, nutze den separaten Prompt:
+
+```
+@videokomprimierer
+QUELLE: ~/Videos/Series/Garfield/Season 01/
+```
+
 ## Wichtige Hinweise
 
 - TMDB-Key in `~/.bashrc` als `export TMDB_API_KEY="..."` setzen
 - `-map 0:v -map 0:a` statt `-map 0` (sonst `codec none`-Fehler)
 - `episode_id="S01E05"` statt `episode_number`
-- NVENC erfordert NVIDIA GPU
+- Für reines Taggen wird `-c copy` verwendet → kein Qualitätsverlust
