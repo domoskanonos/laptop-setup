@@ -32,7 +32,7 @@ KiKA_Pippi Langstrumpf_Pippi auf der Walz (1).mp4 → Serie: Pippi Langstrumpf, 
 
 ### 2. Teil-Videos zusammenführen
 
-Erkennen ob eine Episode auf mehrere Dateien aufgeteilt ist (z.B. `Teil 1`, `Teil 2` oder `_1_`, `_2_` oder `(1)`, `(2)`) und mit ffmpeg concat zu einer Datei zusammenführen.
+Erkennen ob eine Episode auf mehrere Dateien aufgeteilt ist (z.B. `Teil 1`, `Teil 2` oder `_1_`, `_2_` oder ` 1`, ` 2`  oder `1 `, `2 ` oder `(1)`, `(2)`) und mit ffmpeg concat zu einer Datei zusammenführen.
 
 **Erkennungslogik:**
 1. Aus jedem Dateinamen den Teil-Suffix entfernen: `- Teil (\d+)`, `_(\d+)_`, `\((\d+)\)`, `Teil (\d+)` am Ende des Titels
