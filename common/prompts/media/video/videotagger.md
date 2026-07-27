@@ -207,6 +207,17 @@ ffmpeg -y -hwaccel cuda -i "EINGANG.mp4" \
 
 Nach dem Scannen: **Bibliothek aktualisieren** in Jellyfin.
 
+## Vorheriger Schritt
+
+Dieser Prompt verarbeitet Roh-Downloads. Falls du die Videos noch nicht hast:
+
+```
+@mediathekwebview
+Serie: Garfield
+```
+
+Dann `videotagger` auf den `./downloads/Garfield`-Ordner loslassen.
+
 ## Wichtige Hinweise
 
 - TMDB-Key in `~/.bashrc` als `export TMDB_API_KEY="..."` setzen
