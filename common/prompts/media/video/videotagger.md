@@ -116,7 +116,6 @@ fi
 │   ├── thumb.jpg                   ← Jellyfin-Staffel-Thumb
 │   ├── SERIE - S01E01 - TITEL.mp4
 │   ├── SERIE - S01E01 - TITEL-thumb.jpg     ← Episode-Thumbnail (400x600)
-│   ├── SERIE - S01E01 - TITEL-backdrop.jpg  ← Episode-Backdrop (9:16 Hochkant 540x960)
 │   ├── SERIE - S01E02 - TITEL.mp4
 │   └── SERIE - S01E02 - TITEL-thumb.jpg
 ```
@@ -129,7 +128,7 @@ fi
 └── SERIE (JAHR).mp4
 ```
 
-### 5. Metadaten + Covers + Episode-Description + Backdrop (pro Datei)
+### 5. Metadaten + Covers + Episode-Description (pro Datei)
 
 **Variante A: series**
 ```bash
@@ -161,11 +160,6 @@ for FILE in sortierte Liste; do
     -vf "scale=400:600:force_original_aspect_ratio=decrease,pad=400:600:(ow-iw)/2:(oh-ih)/2:color=black" \
     "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL-thumb.jpg"
 
-  # Externes Episode-Backdrop (9:16 Hochkant 540x960, Jellyfin-Detailansicht)
-  ffmpeg -y -ss "$thumb_time" -i "$FILE" -frames:v 1 -q:v 2 \
-    -vf "crop=ih*9/16:ih:(iw-ih*9/16)/2:0,scale=540:960" \
-    "$TARGET_DIR/Season 01/SERIE - S01EXX - EPISODENTITEL-backdrop.jpg"
-
   rm -f /tmp/ep_cover.jpg "$FILE"
 done
 ```
@@ -192,7 +186,7 @@ done
 
 - Tabelle: Quelle → Ziel (im Series/Movies-Pfad)
 - Existieren: `poster.jpg`, `fanart.jpg`, `Season XX/thumb.jpg`?
-- Pro Episode: `*-thumb.jpg` + `*-backdrop.jpg` vorhanden? (prüfen, Liste zeigen)
+- Pro Episode: `*-thumb.jpg` vorhanden? (prüfen, Liste zeigen)
 - Synopsis via ffprobe prüfen (Stichprobe)
 - Gelöschte Quelldateien
 
@@ -205,11 +199,11 @@ done
 | `Season XX/thumb.jpg` | Staffel-Thumbnail | TMDB |
 | `Season XX/season-poster.jpg` | Staffel-Poster | TMDB |
 | `*-thumb.jpg` pro Episode | Episoden-Vorschaubild (Folgenansicht) | Frame aus Video bei 15% |
-| `*-backdrop.jpg` pro Episode | Episoden-Hintergrund (Detailansicht) | Frame aus Video bei 15% (9:16 center-crop, 540x960) |
 | embedded `synopsis` in Datei | Episoden-Beschreibung | TMDB-Serien-Overview |
 | embedded `attached_pic` | Fallback-Cover in Datei selbst | Frame aus Video bei 15% |
+| `*-thumb.jpg` pro Episode | Episoden-Vorschaubild (Folgenansicht) | Frame aus Video bei 15% (400x600) |
 
-→ **embedded + extern = beides vorhanden** – Jellyfin zeigt Thumbnail + Backdrop + Beschreibung in der Episodenansicht.
+→ **embedded + extern = beides vorhanden** – Jellyfin zeigt Thumbnail + Beschreibung in der Episodenansicht.
 
 ## Jellyfin-Einrichtung
 
