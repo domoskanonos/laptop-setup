@@ -13,7 +13,7 @@ services:
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - /home/laptop/Video:/media/video:ro
+      - /home/laptop/Videos:/media/video:ro
     networks:
       - local
 
