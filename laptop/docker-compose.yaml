@@ -87,7 +87,7 @@ services:
     labels:
       - flame.type=application
       - flame.name=TTS
-      - flame.url=http://${HOST}:8003
+      - flame.url=http://${HOST}:8003/api/docs
       - flame.icon=comment
     networks:
       - local
