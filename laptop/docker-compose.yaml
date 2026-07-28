@@ -66,13 +66,13 @@ services:
       - local
 
   tts:
-    image: domoskanonos/quisy-tts:0.39.1
+    image: domoskanonos/quisy-tts:0.39.3
     container_name: tts
     restart: unless-stopped
     ports:
       - "8003:8045"
     volumes:
-      - tts_data:/app
+      - tts_data:/app/data
     deploy:
       resources:
         reservations:
@@ -83,7 +83,7 @@ services:
     environment:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - DEVICE=cuda
-      - MODEL_SIZE=1.7
+      - MODEL=1.7
     labels:
       - flame.type=application
       - flame.name=TTS
