@@ -1,0 +1,207 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8096:8096"
+    labels:
+      - flame.type=application
+      - flame.name=Jellyfin
+      - flame.url=http://${HOST}:8096
+      - flame.icon=jellyfin
+    volumes:
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+      - /home/laptop/Videos:/media/video:ro
+    networks:
+      - local
+
+  immich-server:
+    container_name: immich_server
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    labels:
+      - flame.type=application
+      - flame.name=Immich
+      - flame.url=http://${HOST}:2283
+      - flame.icon=immich
+    volumes:
+      - immich_data:/data
+      - /home/laptop/Bilder:/data/library
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=${TZ:-Europe/Berlin}
+      - DB_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
+      - DB_USERNAME=postgres
+      - DB_DATABASE_NAME=immich
+      - DB_HOSTNAME=immich-database
+      - REDIS_HOSTNAME=immich-redis
+      - IMMICH_LOG_LEVEL=${IMMICH_LOG_LEVEL:-log}
+      - IMMICH_ALLOW_SETUP=${IMMICH_ALLOW_SETUP:-true}
+    ports:
+      - '2283:2283'
+    depends_on:
+      immich-redis:
+        condition: service_started
+      immich-database:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - local
+
+  immich-machine-learning:
+    container_name: immich_machine_learning
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    volumes:
+      - immich_model_cache:/cache
+    environment:
+      - DB_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
+      - DB_USERNAME=postgres
+      - DB_DATABASE_NAME=immich
+      - DB_HOSTNAME=immich-database
+    restart: unless-stopped
+    networks:
+      - local
+
+  immich-redis:
+    container_name: immich_redis
+    image: docker.io/valkey/valkey:9
+    restart: unless-stopped
+    networks:
+      - local
+
+  immich-database:
+    container_name: immich_postgres
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+    environment:
+      - POSTGRES_PASSWORD=${DEFAULT_APP_PASSWORD:-postgres}
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=immich
+      - POSTGRES_INITDB_ARGS=--data-checksums
+      - DB_STORAGE_TYPE=${DB_STORAGE_TYPE:-SSD}
+    volumes:
+      - immich_postgres_data:/var/lib/postgresql/data
+    shm_size: 128mb
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready --dbname=immich --username=postgres || exit 1
+      interval: 10s
+      start_period: 30s
+    networks:
+      - local
+
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Navidrome
+      - flame.url=http://${HOST}:4533
+      - flame.icon=music
+    ports:
+      - "4533:4533"
+    environment:
+      - ND_SCANSCHEDULE=1hour
+    volumes:
+      - navidrome_data:/data
+      - /home/laptop/Musik:/music:ro
+    networks:
+      - local
+
+  flame:
+    image: pawelmalak/flame:latest
+    container_name: flame
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    environment:
+      - PASSWORD=${DEFAULT_USER_PASSWORD:-flame}
+    volumes:
+      - flame_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - flame.type=application
+      - flame.name=Flame
+      - flame.url=http://${HOST}:5005
+      - flame.icon=flame
+    networks:
+      - local
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Webroot
+      - flame.url=http://${HOST}:8080
+      - flame.icon=file
+    ports:
+      - "8080:80"
+    volumes:
+      - /home/laptop/web:/usr/share/nginx/html:ro
+    networks:
+      - local
+
+  radioripper:
+    image: domoskanonos/radio-ripper-stream:latest
+    container_name: radio-ripper
+    restart: unless-stopped
+    volumes:
+      - radio-ripper_config:/app/config:ro
+      - /home/laptop/recordings:/app/mp3_inbox
+      - radio-ripper_work:/app/work
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=FreshRSS
+      - flame.url=http://${HOST}:8010
+      - flame.icon=rss
+    ports:
+      - "8010:80"
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
+      - ADMIN_API_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
+      - CRON_MIN='3,33'
+    networks:
+      - local
+
+  dozzle:
+    image: docker.io/amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Dozzle
+      - flame.url=http://${HOST}:8002
+      - flame.icon=docker
+    ports:
+      - "8002:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - local
+
+volumes:
+  radio-ripper_config:
+  radio-ripper_work:
+  navidrome_data:
+  flame_data:
+  jellyfin_config:
+  jellyfin_cache:
+  immich_data:
+  immich_model_cache:
+  immich_postgres_data:
+  freshrss_data:
+  freshrss_extensions:
+
+networks:
+  local:
