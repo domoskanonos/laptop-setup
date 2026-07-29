@@ -44,7 +44,7 @@ services:
       - flame.url=http://${HOST}:8002
       - flame.icon=immich
     volumes:
-      - ${STORAGE_ROOT}/immich-data:/data
+      - ${DOCKER_DATA_ROOT}/immich-server:/data
       - ${STORAGE_ROOT}/photos:/data/library:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
@@ -103,7 +103,7 @@ services:
     volumes:
       - jellyfin_config:/config
       - jellyfin_cache:/cache
-      - ${STORAGE_ROOT}/Videos:/media/video:ro
+      - ${STORAGE_ROOT}/videos:/media/videos:ro
     networks:
       - local
 
@@ -163,7 +163,7 @@ services:
       - ND_SCANSCHEDULE=1hour
     volumes:
       - navidrome_data:/data
-      - ${STORAGE_ROOT}/Musik:/music:ro
+      - ${STORAGE_ROOT}/music:/music:ro
     networks:
       - local
 
