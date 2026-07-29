@@ -8,7 +8,7 @@ services:
     environment:
       - PASSWORD=${DEFAULT_USER_PASSWORD:-flame}
     volumes:
-      - flame_data:/app/data
+      - ${DOCKER_DATA_ROOT}/flame:/app/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - flame.type=application
@@ -101,7 +101,7 @@ services:
       - flame.url=http://${HOST}:8004
       - flame.icon=jellyfin
     volumes:
-      - jellyfin_config:/config
+      - ${DOCKER_DATA_ROOT}/jellyfin/config:/config
       - jellyfin_cache:/cache
       - ${STORAGE_ROOT}/videos:/media/videos:ro
     networks:
