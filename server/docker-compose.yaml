@@ -37,14 +37,15 @@ services:
   immich-server:
     container_name: immich_server
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    user: "${PUID}:${PGID}"
     labels:
       - flame.type=application
       - flame.name=Immich
       - flame.url=http://${HOST}:8002
       - flame.icon=immich
     volumes:
-      - immich_data:/data
-      - ${STORAGE_ROOT}/photos:/data/library
+      - ${STORAGE_ROOT}/immich-data:/data
+      - ${STORAGE_ROOT}/photos:/data/library:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
       - TZ=${TZ:-Europe/Berlin}
