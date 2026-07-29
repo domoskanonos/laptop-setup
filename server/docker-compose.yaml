@@ -1,19 +1,36 @@
 services:
-  jellyfin:
-    image: jellyfin/jellyfin:latest
-    container_name: jellyfin
+  flame:
+    image: pawelmalak/flame:latest
+    container_name: flame
     restart: unless-stopped
     ports:
-      - "8096:8096"
+      - "8000:5005"
+    environment:
+      - PASSWORD=${DEFAULT_USER_PASSWORD:-flame}
+    volumes:
+      - flame_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - flame.type=application
-      - flame.name=Jellyfin
-      - flame.url=http://${HOST}:8096
-      - flame.icon=jellyfin
+      - flame.name=Flame
+      - flame.url=http://${HOST}:8000
+      - flame.icon=flame
+    networks:
+      - local
+
+  dozzle:
+    image: docker.io/amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=Dozzle
+      - flame.url=http://${HOST}:8001
+      - flame.icon=docker
+    ports:
+      - "8001:8080"
     volumes:
-      - jellyfin_config:/config
-      - jellyfin_cache:/cache
-      - /home/laptop/Videos:/media/video:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - local
 
@@ -23,7 +40,7 @@ services:
     labels:
       - flame.type=application
       - flame.name=Immich
-      - flame.url=http://${HOST}:2283
+      - flame.url=http://${HOST}:8002
       - flame.icon=immich
     volumes:
       - immich_data:/data
@@ -39,13 +56,53 @@ services:
       - IMMICH_LOG_LEVEL=${IMMICH_LOG_LEVEL:-log}
       - IMMICH_ALLOW_SETUP=${IMMICH_ALLOW_SETUP:-true}
     ports:
-      - '2283:2283'
+      - '8002:2283'
     depends_on:
       immich-redis:
         condition: service_started
       immich-database:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - local
+
+  freshrss:
+    image: freshrss/freshrss:latest
+    container_name: freshrss
+    restart: unless-stopped
+    labels:
+      - flame.type=application
+      - flame.name=FreshRSS
+      - flame.url=http://${HOST}:8003
+      - flame.icon=rss
+    ports:
+      - "8003:80"
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+      - freshrss_extensions:/var/www/FreshRSS/extensions
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
+      - ADMIN_API_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
+      - CRON_MIN='3,33'
+    networks:
+      - local
+
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+    ports:
+      - "8004:8096"
+    labels:
+      - flame.type=application
+      - flame.name=Jellyfin
+      - flame.url=http://${HOST}:8004
+      - flame.icon=jellyfin
+    volumes:
+      - jellyfin_config:/config
+      - jellyfin_cache:/cache
+      - /home/laptop/Videos:/media/video:ro
     networks:
       - local
 
@@ -97,34 +154,15 @@ services:
     labels:
       - flame.type=application
       - flame.name=Navidrome
-      - flame.url=http://${HOST}:4533
+      - flame.url=http://${HOST}:8005
       - flame.icon=music
     ports:
-      - "4533:4533"
+      - "8005:4533"
     environment:
       - ND_SCANSCHEDULE=1hour
     volumes:
       - navidrome_data:/data
       - /home/laptop/Musik:/music:ro
-    networks:
-      - local
-
-  flame:
-    image: pawelmalak/flame:latest
-    container_name: flame
-    restart: unless-stopped
-    ports:
-      - "5005:5005"
-    environment:
-      - PASSWORD=${DEFAULT_USER_PASSWORD:-flame}
-    volumes:
-      - flame_data:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      - flame.type=application
-      - flame.name=Flame
-      - flame.url=http://${HOST}:5005
-      - flame.icon=flame
     networks:
       - local
 
@@ -144,55 +182,7 @@ services:
     networks:
       - local
 
-  radioripper:
-    image: domoskanonos/radio-ripper-stream:latest
-    container_name: radio-ripper
-    restart: unless-stopped
-    volumes:
-      - radio-ripper_config:/app/config:ro
-      - /home/laptop/recordings:/app/mp3_inbox
-      - radio-ripper_work:/app/work
-  freshrss:
-    image: freshrss/freshrss:latest
-    container_name: freshrss
-    restart: unless-stopped
-    labels:
-      - flame.type=application
-      - flame.name=FreshRSS
-      - flame.url=http://${HOST}:8010
-      - flame.icon=rss
-    ports:
-      - "8010:80"
-    volumes:
-      - freshrss_data:/var/www/FreshRSS/data
-      - freshrss_extensions:/var/www/FreshRSS/extensions
-    environment:
-      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
-      - ADMIN_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
-      - ADMIN_API_PASSWORD=${DEFAULT_USER_PASSWORD:-freshrss}
-      - CRON_MIN='3,33'
-    networks:
-      - local
-
-  dozzle:
-    image: docker.io/amir20/dozzle:latest
-    container_name: dozzle
-    restart: unless-stopped
-    labels:
-      - flame.type=application
-      - flame.name=Dozzle
-      - flame.url=http://${HOST}:8002
-      - flame.icon=docker
-    ports:
-      - "8002:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - local
-
 volumes:
-  radio-ripper_config:
-  radio-ripper_work:
   navidrome_data:
   flame_data:
   jellyfin_config:
