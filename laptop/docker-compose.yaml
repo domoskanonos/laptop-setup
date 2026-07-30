@@ -51,6 +51,7 @@ services:
     image: jlesage/makemkv
     container_name: makemkv
     restart: unless-stopped
+    privileged: true
     ports:
       - "5800:5800"
     environment:
@@ -60,7 +61,7 @@ services:
       - /home/laptop/docker/data/makemkv/output:/output
     devices:
       - /dev/sr0:/dev/sr0
-      - /dev/sg1:/dev/sg0
+      - /dev/sg0:/dev/sg0
 
 volumes:
   comfyui_root:
