@@ -47,20 +47,20 @@ services:
     networks:
       - local
 
-  radioripper:
-    image: domoskanonos/radio-ripper-stream:latest
-    container_name: radio-ripper
+  makemkv:
+    image: jlesage/makemkv
+    container_name: makemkv
     restart: unless-stopped
+    ports:
+      - "5800:5800"
     volumes:
-      - radio-ripper_config:/app/config:ro
-      - /home/laptop/recordings:/app/mp3_inbox
-      - radio-ripper_work:/app/work
-    networks:
-      - local
+      - /home/laptop/docker/data/makemkv/config:/config
+      - /home/laptop/docker/data/makemkv/output:/output
+    devices:
+      - /dev/sr0:/dev/sr0
+      - /dev/sg0:/dev/sg0
 
 volumes:
-  radio-ripper_config:
-  radio-ripper_work:
   comfyui_root:
   comfyui_models:
   comfyui_hf_hub:
