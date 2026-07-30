@@ -59,9 +59,7 @@ services:
     volumes:
       - /home/laptop/docker/data/makemkv/config:/config
       - /home/laptop/docker/data/makemkv/output:/output
-    devices:
-      - /dev/sr0:/dev/sr0
-      - /dev/sg0:/dev/sg0
+      - /dev:/dev:rslave
 
 volumes:
   comfyui_root:
