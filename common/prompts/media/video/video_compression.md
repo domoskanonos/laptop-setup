@@ -22,11 +22,13 @@ Denke beim Rippen daran: Ich habe eine Nvidia 4060.
 Das wird empfohlen: 
 RTX 4060 AV1 Optimiert – Bester Kompromiss Qualität/Größe
 
+Wähle vom Audio immer den besten/ersten Stream pro Sprache aus (Default-Track), konvertiere ihn nach AC-3 640 kbps 5.1 und ignoriere doppelte Tonspuren. Pro Sprache wird nur eine Spur behalten.
+
 ffmpeg -i input.mkv -c:v av1_nvenc -preset p7 -cq 35 \
   -multipass fullres -rc-lookahead 32 \
   -spatial-aq 1 -aq-strength 12 \
   -temporal-aq 1 -b_ref_mode middle \
-  -c:a copy output.mkv
+  -c:a ac3 -b:a 640k -c:s copy output.mkv
 
 Ergebnisse für 1080p Blu-ray (~2,5h):
 - ~3,5 GB pro Film
