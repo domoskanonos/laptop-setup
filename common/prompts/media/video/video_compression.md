@@ -6,4 +6,4 @@ Das Ergebnis sollst du unter /home/laptop/Videos/Movies speichern.
 Bei der Benammung sollst du die Regeln von Jellyfin, die du hier findest beachten:
 https://jellyfin.org/docs/general/server/media/movies/
 
-Ich möchte dich auch bitten die Datei mit den nötigen Tags und mit Cover auszustatten, so das es in Jellyfin super aussiet.
+Ich möchte dich auch bitten die Datei mit den nötigen Metadaten und mit Cover auszustatten, so das es in Jellyfin super aussiet. Falls Metadaten oder Cover schon vorhanden sind sollen diese bleiben und benutzt werden.

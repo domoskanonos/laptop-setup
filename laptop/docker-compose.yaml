@@ -53,12 +53,14 @@ services:
     restart: unless-stopped
     ports:
       - "5800:5800"
+    environment:
+      - GROUP_ID=24
     volumes:
       - /home/laptop/docker/data/makemkv/config:/config
       - /home/laptop/docker/data/makemkv/output:/output
     devices:
       - /dev/sr0:/dev/sr0
-      - /dev/sg0:/dev/sg0
+      - /dev/sg1:/dev/sg0
 
 volumes:
   comfyui_root:
