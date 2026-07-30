@@ -47,6 +47,19 @@ services:
     networks:
       - local
 
+  makemkv:
+    image: jlesage/makemkv
+    container_name: makemkv
+    restart: unless-stopped
+    ports:
+      - "5800:5800"
+    volumes:
+      - /home/laptop/docker/data/makemkv/config:/config
+      - /home/laptop/docker/data/makemkv/output:/output
+    devices:
+      - /dev/sr0:/dev/sr0
+      - /dev/sg0:/dev/sg0
+
 volumes:
   comfyui_root:
   comfyui_models:
