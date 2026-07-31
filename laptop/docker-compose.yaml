@@ -1,10 +1,45 @@
 services:
+  flame:
+    image: pawelmalak/flame:multiarch2.4.0
+    container_name: flame
+    restart: unless-stopped
+    ports:
+      - "8000:5005"
+    environment:
+      - PASSWORD=${FLAME_PASSWORD}
+    volumes:
+      - flame_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - flame.type=application
+      - flame.name=Flame
+      - flame.url=http://${HOST}:8000
+      - flame.icon=fire
+    networks:
+      - local
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: unless-stopped
+    ports:
+      - "8001:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - flame.type=application
+      - flame.name=Dozzle
+      - flame.url=http://${HOST}:8001
+      - flame.icon=docker
+    networks:
+      - local
+
   comfyui:
     image: yanwk/comfyui-boot:cu130-slim-v2
     container_name: comfyui
     restart: unless-stopped
     ports:
-      - "8188:8188"
+      - "8002:8188"
     environment:
       - CLI_ARGS=--disable-xformers --disable-smart-memory
     deploy:
@@ -22,6 +57,11 @@ services:
       - comfyui_input:/root/ComfyUI/input
       - comfyui_output:/root/ComfyUI/output
       - comfyui_workflows:/root/ComfyUI/user/default/workflows
+    labels:
+      - flame.type=application
+      - flame.name=ComfyUI
+      - flame.url=http://${HOST}:8002
+      - flame.icon=code
     networks:
       - local
 
@@ -30,7 +70,7 @@ services:
     container_name: tts
     restart: unless-stopped
     ports:
-      - "8045:8045"
+      - "8003:8045"
     volumes:
       - tts_data:/app
     deploy:
@@ -44,24 +84,37 @@ services:
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
       - DEVICE=cuda
       - MODEL_SIZE=1.7
+    labels:
+      - flame.type=application
+      - flame.name=TTS
+      - flame.url=http://${HOST}:8003
+      - flame.icon=comment
     networks:
       - local
 
   makemkv:
-    image: jlesage/makemkv
+    image: jlesage/makemkv:v26.07.2
     container_name: makemkv
     restart: unless-stopped
     privileged: true
     ports:
-      - "5800:5800"
+      - "8004:5800"
     environment:
       - GROUP_ID=24
     volumes:
       - /home/laptop/docker/data/makemkv/config:/config
       - /home/laptop/docker/data/makemkv/output:/output
       - /dev:/dev:rslave
+    labels:
+      - flame.type=application
+      - flame.name=MakeMKV
+      - flame.url=http://${HOST}:8004
+      - flame.icon=file
+    networks:
+      - local
 
 volumes:
+  flame_data:
   comfyui_root:
   comfyui_models:
   comfyui_hf_hub:
