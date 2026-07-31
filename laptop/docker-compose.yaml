@@ -101,6 +101,7 @@ services:
       - "8004:5800"
     environment:
       - GROUP_ID=24
+      #- AUTO_DISC_RIPPER=1
     volumes:
       - /home/laptop/docker/data/makemkv/config:/config
       - /home/laptop/docker/data/makemkv/output:/output
