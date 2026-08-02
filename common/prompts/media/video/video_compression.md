@@ -48,6 +48,8 @@ Das Ergebnis speicherst du unter /home/laptop/Videos/Movies. Die Zwischendatei i
 Bei der Benammung sollst du die Regeln von Jellyfin, die du hier findest beachten:
 https://jellyfin.org/docs/general/server/media/movies/
 
+- Filmordner NUR als `<Filmtitel> (Jahr)` benennen – OHNE tmdbid-Zusatz im Ordnernamen (sieht in Jellyfin sauberer aus). Die TMDB-ID wird über die NFOs (<tmdbid>, <uniqueid>) übertragen, dadurch klappt das Matching auch ohne Kürzel im Ordnernamen.
+
 Ich möchte dich auch bitten die Datei mit den nötigen Metadaten und mit Cover auszustatten, so das es in Jellyfin super aussiet. Falls Metadaten oder Cover schon vorhanden sind sollen diese bleiben und benutzt werden.
 
 Erstelle auch eine dateiname.nfo mit Cast-Informationen und Profilbildern von TMDB (API-Key: 8265bd1679663a7ea12ac168da84d2e8). Rufe dafür die Credits vom Film über die TMDB API ab:
@@ -62,9 +64,9 @@ Füge die ersten 8-10 Hauptdarsteller mit `<name>`, `<role>` und `<thumb>` (URL:
 
 Ablage-Struktur (Jellyfin-Filmformat):
 
-  /home/laptop/Videos/Movies/<Filmtitel> (Jahr) [tmdbid-<ID>]/
-    <Filmtitel> (Jahr) [tmdbid-<ID>].mkv
-    <Filmtitel> (Jahr) [tmdbid-<ID>].nfo
+  /home/laptop/Videos/Movies/<Filmtitel> (Jahr)/
+    <Filmtitel> (Jahr).mkv
+    <Filmtitel> (Jahr).nfo
     cover.jpg
     backdrop.jpg
 
@@ -104,6 +106,10 @@ Die Zwischendateien in /home/laptop/Videos/Ripping löschst du nach erfolgreiche
 Bei der Benammung sollst du die Regeln von Jellyfin, die du hier findest beachten:
 https://jellyfin.org/docs/general/server/media/shows/
 
+- Serienordner NUR als `<Serienname> (Jahr)` benennen – OHNE tmdbid-Zusatz im Ordnernamen (sieht in Jellyfin sauberer aus). Die TMDB-ID wird über die NFOs (<tmdbid>, <uniqueid>) übertragen, dadurch klappt das Matching auch ohne Kürzel im Ordnernamen.
+- Staffelordner heißen `Season NN` (zweistellig gepolstert, z.B. `Season 01`), niemals `S01` oder `SE01`.
+- Episodendateien: `<Serienname> - S01E01 - <Episodentitel>.mkv` (S##E##-Format, Jellyfin-konform).
+
 - Ermittle die Serie per TMDB-Serie-Suche:
   `curl -s "https://api.themoviedb.org/3/search/tv?api_key=8265bd1679663a7ea12ac168da84d2e8&query=<SERIENNAME>&language=de"`
 - Rufe Serien-Details, Credits und Staffeln ab:
@@ -114,7 +120,7 @@ https://jellyfin.org/docs/general/server/media/shows/
 
 Ablage-Struktur (Jellyfin-Serienformat):
 
-  /home/laptop/Videos/Series/<Serienname> (Jahr) [tmdbid-<ID>]/
+  /home/laptop/Videos/Series/<Serienname> (Jahr)/
     tvshow.nfo
     poster.jpg
     backdrop.jpg
@@ -128,7 +134,7 @@ Ablage-Struktur (Jellyfin-Serienformat):
       ...
 
 - tvshow.nfo: Serien-NFO mit Root-Element `<tvshow>` (title, year, premiered, rating, plot, genre, id, tmdbid, uniqueid type="tmdb") und den ersten 8-10 Hauptdarstellern mit `<name>`, `<role>`, `<thumb>` (Profilbilder von https://image.tmdb.org/t/p/original/<profile_path>).
-- season.nfo: Staffel-NFO mit Root-Element `<season>` (enthält seasonnumber).
+- season.nfo: Staffel-NFO mit Root-Element `<season>` (enthält seasonnumber UND `<plot>` mit der Staffelbeschreibung – Feld `overview` aus der TMDB-Staffelabfrage; Jellyfin zeigt sie als Staffelbeschreibung an).
 - <Episoden>.nfo: Episoden-NFO mit Root-Element `<episodedetails>` (title, season, episode, plot, rating, aired, uniqueid type="tmdb").
 - poster.jpg (Serien-Poster) und backdrop.jpg aus der TMDB-Serienabfrage (poster_path/backdrop_path) herunterladen; poster.jpg der Staffel aus der Staffelabfrage (poster_path). Basis: https://image.tmdb.org/t/p/original/
 
