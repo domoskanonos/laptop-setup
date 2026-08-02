@@ -92,28 +92,6 @@ services:
     networks:
       - local
 
-  makemkv:
-    image: jlesage/makemkv:v26.07.2
-    container_name: makemkv
-    restart: unless-stopped
-    privileged: true
-    ports:
-      - "8004:5800"
-    environment:
-      - GROUP_ID=24
-      #- AUTO_DISC_RIPPER=1
-    volumes:
-      - /home/laptop/docker/data/makemkv/config:/config
-      - /home/laptop/docker/data/makemkv/output:/output
-      - /dev:/dev:rslave
-    labels:
-      - flame.type=application
-      - flame.name=MakeMKV
-      - flame.url=http://${HOST}:8004
-      - flame.icon=file
-    networks:
-      - local
-
 volumes:
   flame_data:
   comfyui_root:
