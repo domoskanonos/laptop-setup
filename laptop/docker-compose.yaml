@@ -96,6 +96,7 @@ services:
     image: domoskanonos/radio-ripper-stream:latest
     container_name: radio-ripper
     restart: unless-stopped
+    entrypoint: ["radio-ripper", "--config", "/app/config/config.json"]
     environment:
       ACOUST_ID: ${ACOUST_ID}
     volumes:
