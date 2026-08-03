@@ -92,6 +92,23 @@ services:
     networks:
       - local
 
+  radioripper:
+    image: domoskanonos/radio-ripper-stream:latest
+    container_name: radio-ripper
+    restart: unless-stopped
+    environment:
+      ACOUST_ID: ${ACOUST_ID}
+    volumes:
+      - /home/laptop/docker/data/radioripper/config:/app/config:ro
+      - /home/laptop/docker/data/radioripper/work:/app/work
+      - /home/laptop/Musik:/app/destination
+    labels:
+      - flame.type=application
+      - flame.name=RadioRipper
+      - flame.icon=radio
+    networks:
+      - local
+
 volumes:
   flame_data:
   comfyui_root:
